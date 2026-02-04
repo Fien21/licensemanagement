@@ -8,12 +8,20 @@ use App\Imports\LicensesImport;
 use App\Exports\LicensesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Validators\ValidationException;
+use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class LicenseController extends Controller
 {
     public function index(Request $request)
     {
         $query = License::query();
+
+        // Filter by Sheet Name (Tabs)
+        if ($request->filled('sheet_name')) {
+            $query->where('sheet_name', $request->input('sheet_name'));
+        }
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -28,7 +36,8 @@ class LicenseController extends Controller
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('customer_name', 'like', "%{$search}%")
                     ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('contact', 'like', "%{$search}%");
+                    ->orWhere('contact', 'like', "%{$search}%")
+                    ->orWhere('sheet_name', 'like', "%{$search}%");
             });
         }
 
@@ -50,14 +59,22 @@ class LicenseController extends Controller
         }
         
         $totalLicenses = License::count();
+
+        // Get counts for each category tab
+        $sheetCounts = License::select('sheet_name', DB::raw('count(*) as total'))
+            ->groupBy('sheet_name')
+            ->pluck('total', 'sheet_name')
+            ->all();
+
         $licenses = $query->paginate(50)->appends($request->all());
 
-        return view('welcome', compact('licenses', 'totalLicenses'));
+        return view('welcome', compact('licenses', 'totalLicenses', 'sheetCounts'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'sheet_name' => 'required',
             'vendo_box_no' => 'nullable',
             'vendo_machine' => 'nullable',
             'license' => 'nullable',
@@ -87,7 +104,7 @@ class LicenseController extends Controller
         try {
             Excel::import($import, $request->file('file'));
         } catch (ValidationException $e) {
-            // Don't handle validation exceptions here, they are handled by the import class
+            // Exceptions handled by import class
         }
 
         $successCount = $import->getSuccessCount();
@@ -110,9 +127,44 @@ class LicenseController extends Controller
         return redirect('/')->with('success', $successCount . ' licenses imported successfully.');
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        return Excel::download(new LicensesExport, 'licenses.xlsx');
+        // Path to your custom formatted template
+        $templatePath = public_path('sample_exports/license_sample_exports.xlsx');
+        
+        // Load the template
+        $spreadsheet = IOFactory::load($templatePath);
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        // Get the data to export
+        $licenses = (new LicensesExport($request))->collection();
+        
+        // Start writing data from row 4
+        $row = 4;
+        foreach ($licenses as $license) {
+            $sheet->setCellValue('A' . $row, $license->sheet_name);
+            $sheet->setCellValue('B' . $row, $license->vendo_box_no);
+            $sheet->setCellValue('C' . $row, $license->vendo_machine);
+            $sheet->setCellValue('D' . $row, $license->license);
+            $sheet->setCellValue('E' . $row, $license->device_id);
+            $sheet->setCellValue('F' . $row, $license->description);
+            $sheet->setCellValue('G' . $row, $license->date);
+            $sheet->setCellValue('H' . $row, $license->technician);
+            $sheet->setCellValue('I' . $row, $license->email);
+            $sheet->setCellValue('J' . $row, $license->customer_name);
+            $sheet->setCellValue('K' . $row, $license->address);
+            $sheet->setCellValue('L' . $row, $license->contact);
+            $row++;
+        }
+        
+        $fileName = 'licenses_export_' . date('Y-m-d') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+        
+        // Create a temporary file to save the spreadsheet
+        $temp_file = tempnam(sys_get_temp_dir(), 'export');
+        $writer->save($temp_file);
+        
+        return response()->download($temp_file, $fileName)->deleteFileAfterSend(true);
     }
 
     public function archive(License $license)
@@ -142,14 +194,18 @@ class LicenseController extends Controller
     public function bulkArchive(Request $request)
     {
         $ids = $request->input('ids');
-        License::whereIn('id', $ids)->delete();
+        if($ids) {
+            License::whereIn('id', $ids)->delete();
+        }
         return redirect('/')->with('success', 'Selected licenses have been archived.');
     }
 
     public function bulkDelete(Request $request)
     {
         $ids = $request->input('ids');
-        License::whereIn('id', $ids)->forceDelete();
+        if($ids) {
+            License::whereIn('id', $ids)->forceDelete();
+        }
         return redirect('/')->with('success', 'Selected licenses have been permanently deleted.');
     }
 }

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -15,6 +14,12 @@
     <!-- Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Custom scrollbar for the sheet name tabs */
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 </head>
 
 <body class="antialiased bg-gray-100">
@@ -52,7 +57,18 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
                         <h2 class="text-3xl font-bold text-gray-800">Manage Licenses</h2>
-                        <span class="ml-4 bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Total: {{ $totalLicenses }}</span>
+                        <!-- High Visibility Total Indicator -->
+                        <div class="ml-6 flex items-center bg-blue-50 border border-blue-200 px-4 py-2 rounded-xl shadow-sm">
+                            <div class="bg-blue-500 p-1.5 rounded-lg mr-3">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-blue-600 uppercase tracking-wider leading-none">Total Active</p>
+                                <p class="text-xl font-bold text-blue-900 leading-tight">{{ $totalLicenses }}</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex items-center">
                         <div class="relative inline-block text-left mr-4">
@@ -70,11 +86,49 @@
                             </div>
                         </div>
                         <button id="batch-upload-button" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 ease-in-out shadow-lg">Batch Upload</button>
+                        
+                        <!-- NEW EXPORT BUTTON: Carries query filters to the backend -->
+                        <a href="/licenses/export?{{ http_build_query(request()->query()) }}" class="ml-4 bg-indigo-500 text-white px-6 py-2 rounded-full hover:bg-indigo-600 transition-colors duration-300 ease-in-out shadow-lg flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Export
+                        </a>
+
                         <button id="add-license-button" class="ml-4 bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 ease-in-out shadow-lg">+ Add New License</button>
                     </div>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <p class="text-gray-600">This page lists all active licenses in the system. You can add new licenses, edit existing ones, or move them to the archive.</p>
+
+                <!-- Sheet Name Filter Tabs with Individual Totals -->
+                <div class="flex items-center space-x-2 overflow-x-auto pb-2 custom-scrollbar">
+                    @php
+                        $sheetTabs = [
+                            ['name' => 'AZTECH GENSAN', 'color' => 'bg-white text-gray-800 border-green-600 border-b-2'],
+                            ['name' => 'SHOPEE GENSAN', 'color' => 'bg-orange-200 text-gray-900'],
+                            ['name' => 'AZTECH POLOMOLOK', 'color' => 'bg-blue-300 text-gray-900'],
+                            ['name' => 'BCT GENSAN', 'color' => 'bg-green-200 text-gray-900'],
+                            ['name' => 'BCT KORONADAL', 'color' => 'bg-lime-300 text-gray-900'],
+                            ['name' => 'AZTEK ISULAN', 'color' => 'bg-indigo-300 text-gray-900'],
+                            ['name' => 'AZNET MAITUM', 'color' => 'bg-sky-300 text-gray-900'],
+                            ['name' => 'AZNET KIAMBA', 'color' => 'bg-blue-200 text-gray-900']
+                        ];
+                    @endphp
+                    <a href="/" class="px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border {{ !request('sheet_name') ? 'bg-gray-800 text-white' : 'bg-white text-gray-600' }}">
+                        ALL <span class="ml-1 opacity-70">({{ $totalLicenses }})</span>
+                    </a>
+                    @foreach($sheetTabs as $tab)
+                        @php
+                            // Updated count logic to default to 0
+                            $currentCount = isset($sheetCounts) ? ($sheetCounts[$tab['name']] ?? 0) : 0;
+                        @endphp
+                        <a href="/?sheet_name={{ urlencode($tab['name']) }}" 
+                           class="flex items-center px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border shadow-sm transition-transform hover:scale-105 {{ $tab['color'] }} {{ request('sheet_name') == $tab['name'] ? 'ring-2 ring-gray-400' : '' }}">
+                            {{ $tab['name'] }}
+                            <span class="ml-2 bg-black bg-opacity-10 px-1.5 py-0.5 rounded text-[10px]">
+                                {{ $currentCount }}
+                            </span>
+                        </a>
+                    @endforeach
                 </div>
             </div>
 
@@ -85,7 +139,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
-                            <input type="text" name="search" id="search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Search for anything...">
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Search for anything...">
                         </div>
                         <div>
                             <label for="sort_by" class="block text-sm font-medium text-gray-700">Sort By</label>
@@ -98,6 +152,9 @@
                                 <option value="modified_oldest" {{ request('sort_by') == 'modified_oldest' ? 'selected' : '' }}>Last Modified (Oldest)</option>
                             </select>
                         </div>
+                        @if(request('sheet_name'))
+                            <input type="hidden" name="sheet_name" value="{{ request('sheet_name') }}">
+                        @endif
                     </div>
                     <div class="flex justify-end mt-4">
                         <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 ease-in-out shadow-lg">Apply Filters</button>
@@ -116,6 +173,7 @@
                                 <thead class="bg-gray-800 text-white">
                                     <tr>
                                         <th class="p-2 text-left"><input type="checkbox" id="select-all"></th>
+                                        <th class="p-2 text-left">Sheet Name</th>
                                         <th class="p-2 text-left">Vendo Box No.</th>
                                         <th class="p-2 text-left">Vendo Machine</th>
                                         <th class="p-2 text-left">License</th>
@@ -134,6 +192,7 @@
                                     @foreach ($licenses as $license)
                                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                                         <td class="p-2"><input type="checkbox" name="ids[]" value="{{ $license->id }}" class="license-checkbox"></td>
+                                        <td class="p-2 font-bold text-blue-600 whitespace-nowrap">{{ $license->sheet_name }}</td>
                                         <td class="p-2">{{ $license->vendo_box_no }}</td>
                                         <td class="p-2">{{ $license->vendo_machine }}</td>
                                         <td class="p-2" style="word-break: break-all;">{{ $license->license }}</td>
@@ -146,9 +205,9 @@
                                         <td class="p-2" style="word-break: break-all;">{{ $license->address }}</td>
                                         <td class="p-2">{{ $license->contact }}</td>
                                         <td class="p-2 flex items-center">
-                                            <button class="text-blue-500 hover:text-blue-700 mr-2">View</button>
-                                            <button class="text-green-500 hover:text-green-700 mr-2">Edit</button>
-                                            <button class="text-red-500 hover:text-red-700" onclick="showArchiveModal({{ $license->id }})">Archive</button>
+                                            <a href="/licenses/{{ $license->id }}" class="text-blue-500 hover:text-blue-700 mr-2">View</a>
+                                            <a href="/licenses/{{ $license->id }}/edit" class="text-green-500 hover:text-green-700 mr-2">Edit</a>
+                                            <button type="button" class="text-red-500 hover:text-red-700" onclick="showArchiveModal({{ $license->id }})">Archive</button>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -189,6 +248,7 @@
                 <div id="guide-content" class="hidden mt-2 p-4 bg-gray-100 rounded-lg">
                     <p>Your CSV or Excel file should have the following headers:</p>
                     <ul class="list-disc list-inside">
+                        <li>sheet_name</li>
                         <li>vendo_box_no</li>
                         <li>vendo_machine</li>
                         <li>license</li>
@@ -251,63 +311,87 @@
 
         <h3 class="text-lg font-bold text-gray-800 mb-3">Add New License</h3>
 
-        <form action="/licenses" method="POST">
+        <!-- Error Handling Logic Added to Form Fields -->
+        <form action="/licenses" method="POST" id="add-license-form">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                
+                <div class="mb-2 md:col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-1" for="sheet_name">Sheet Name (Category)</label>
+                    <select name="sheet_name" id="sheet_name" class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('sheet_name') border-red-500 @enderror">
+                        <option value="">Select Category...</option>
+                        @foreach($sheetTabs as $tab)
+                            <option value="{{ $tab['name'] }}" {{ old('sheet_name') == $tab['name'] ? 'selected' : '' }}>{{ $tab['name'] }}</option>
+                        @endforeach
+                    </select>
+                    @error('sheet_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="vendo_box_no">Vendo Box No</label>
-                    <input type="text" name="vendo_box_no" id="vendo_box_no" placeholder="e.g., V123"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" placeholder="e.g., V123"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('vendo_box_no') border-red-500 @enderror">
+                    @error('vendo_box_no') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="vendo_machine">Vendo Machine</label>
-                    <input type="text" name="vendo_machine" id="vendo_machine" placeholder="e.g., PISOFI-XYZ"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="vendo_machine" id="vendo_machine" value="{{ old('vendo_machine') }}" placeholder="e.g., PISOFI-XYZ"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('vendo_machine') border-red-500 @enderror">
+                    @error('vendo_machine') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="license">License</label>
-                    <input type="text" name="license" id="license" placeholder="Enter the license key"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="license" id="license" value="{{ old('license') }}" placeholder="Enter the license key"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('license') border-red-500 @enderror">
+                    @error('license') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="device_id">Device ID</label>
-                    <input type="text" name="device_id" id="device_id" placeholder="Enter the device ID"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" placeholder="Enter the device ID"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('device_id') border-red-500 @enderror">
+                    @error('device_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="date">Date</label>
-                    <input type="date" name="date" id="date" placeholder="YYYY-MM-DD"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="date" name="date" id="date" value="{{ old('date') }}"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('date') border-red-500 @enderror">
+                    @error('date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="description">Description</label>
                     <textarea name="description" id="description" placeholder="Add any relevant notes..." rows="2"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm"></textarea>
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                    @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="technician">Technician</label>
-                    <input type="text" name="technician" id="technician" placeholder="e.g., John Doe"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="technician" id="technician" value="{{ old('technician') }}" placeholder="e.g., John Doe"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('technician') border-red-500 @enderror">
+                    @error('technician') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="email">PISOFI Email / LPB Radius ID</label>
-                    <input type="text" name="email" id="email" placeholder="e.g., customer@example.com"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('email') border-red-500 @enderror">
+                    @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="customer_name">Customer Name</label>
-                    <input type="text" name="customer_name" id="customer_name" placeholder="e.g., Jane Smith"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" placeholder="e.g., Jane Smith"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('customer_name') border-red-500 @enderror">
+                    @error('customer_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="address">Address</label>
-                    <input type="text" name="address" id="address" placeholder="e.g., 123 Main St, Anytown"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="address" id="address" value="{{ old('address') }}" placeholder="e.g., 123 Main St, Anytown"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('address') border-red-500 @enderror">
+                    @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="mb-2">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="contact">Contact</label>
-                    <input type="text" name="contact" id="contact" placeholder="e.g., 555-1234"
-                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                    <input type="text" name="contact" id="contact" value="{{ old('contact') }}" placeholder="e.g., 555-1234"
+                        class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('contact') border-red-500 @enderror">
+                    @error('contact') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
 
@@ -325,6 +409,7 @@
     </div>
 </div>
 
+<!-- Hidden Archive Form -->
 <form id="archive-form" method="POST" class="hidden">@csrf</form>
 
 <script>
@@ -349,15 +434,27 @@
 
     function openModal(modal) {
         modal.classList.remove('hidden');
+        
+        // AUTO-PICK DATE: Automatically set the date field to today when opening
+        if(modal.id === 'add-license-modal') {
+            const dateInput = document.getElementById('date');
+            if(dateInput && !dateInput.value) { // Only set if not already filled (by old value)
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+            }
+        }
+
         setTimeout(() => {
             modal.classList.remove('opacity-0');
-            modal.querySelector('div').classList.remove('scale-95');
+            const innerDiv = modal.querySelector('div');
+            if(innerDiv) innerDiv.classList.remove('scale-95');
         }, 10);
     }
 
     function closeModal(modal) {
         modal.classList.add('opacity-0');
-        modal.querySelector('div').classList.add('scale-95');
+        const innerDiv = modal.querySelector('div');
+        if(innerDiv) innerDiv.classList.add('scale-95');
         setTimeout(() => {
             modal.classList.add('hidden');
         }, 300);
@@ -432,7 +529,8 @@
                     location.reload();
                 }, 2000);
             } else {
-                // Handle error
+                 Swal.fire('Error', 'Batch upload failed. Please check the console.', 'error');
+                 progressContainer.classList.add('hidden');
             }
         });
 
@@ -442,8 +540,8 @@
 
     function showArchiveModal(id) {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: 'Archive License?',
+            text: "You can restore this from the archived section later.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -452,7 +550,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 const form = document.getElementById('archive-form');
-                form.action = `/licenses/${id}/archive`;
+                form.action = '/licenses/' + id + '/archive';
                 form.submit();
             }
         })
@@ -486,13 +584,15 @@
 
     bulkArchive.addEventListener('click', function(e) {
         e.preventDefault();
+        const checkedCount = document.querySelectorAll('.license-checkbox:checked').length;
+        if(checkedCount === 0) return Swal.fire('Wait', 'Select at least one license first.', 'info');
+
         Swal.fire({
             title: 'Archive Selected',
-            text: "Are you sure you want to archive the selected licenses?",
+            text: `Are you sure you want to archive ${checkedCount} items?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, archive them!'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -504,14 +604,16 @@
 
     bulkDelete.addEventListener('click', function(e) {
         e.preventDefault();
+        const checkedCount = document.querySelectorAll('.license-checkbox:checked').length;
+        if(checkedCount === 0) return Swal.fire('Wait', 'Select at least one license first.', 'info');
+
         Swal.fire({
-            title: 'Delete Selected',
-            text: "Are you sure you want to permanently delete the selected licenses? This action cannot be undone.",
+            title: 'Delete Selected?',
+            text: "This will permanently remove the selected licenses!",
             icon: 'error',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete them!'
+            confirmButtonText: 'Yes, delete permanently!'
         }).then((result) => {
             if (result.isConfirmed) {
                 bulkForm.action = '/licenses/bulk-delete';
@@ -519,9 +621,14 @@
             }
         });
     });
+
+    // OPEN MODAL AUTOMATICALLY IF VALIDATION FAILED
+    @if ($errors->any())
+        window.onload = () => {
+            openModal(addLicenseModal);
+        }
+    @endif
 </script>
 
-
 </body>
-
 </html>
