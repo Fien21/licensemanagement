@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('licenses', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('licenses', 'student_id')) {
+                $table->dropColumn('student_id');
+            }
+            if (Schema::hasColumn('licenses', 'teacher_id')) {
+                $table->dropColumn('teacher_id');
+            }
         });
     }
 
@@ -22,7 +27,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('licenses', function (Blueprint $table) {
-            //
+            $table->string('student_id')->nullable();
+            $table->string('teacher_id')->nullable();
         });
     }
 };

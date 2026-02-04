@@ -14,6 +14,7 @@
 
     <!-- Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="antialiased bg-gray-100">
@@ -68,12 +69,8 @@
                                 </div>
                             </div>
                         </div>
-                        <form action="/licenses/import" method="POST" enctype="multipart/form-data" class="inline-block mr-4">
-                            @csrf
-                            <input type="file" name="file" class="hidden" id="import-file" onchange="this.form.submit()">
-                            <button type="button" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 ease-in-out shadow-lg" onclick="document.getElementById('import-file').click()">Batch Upload</button>
-                        </form>
-                        <button id="add-license-button" class="bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 ease-in-out shadow-lg">+ Add New License</button>
+                        <button id="batch-upload-button" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 ease-in-out shadow-lg">Batch Upload</button>
+                        <button id="add-license-button" class="ml-4 bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 ease-in-out shadow-lg">+ Add New License</button>
                     </div>
                 </div>
                 <div class="bg-gray-50 p-4 rounded-lg">
@@ -144,7 +141,7 @@
                                         <td class="p-2" style="word-break: break-all;">{{ $license->description }}</td>
                                         <td class="p-2">{{ $license->date }}</td>
                                         <td class="p-2">{{ $license->technician }}</td>
-                                        <td class="p-2">{{ $license->pisofi_email_lpb_radius_id }}</td>
+                                        <td class="p-2">{{ $license->email }}</td>
                                         <td class="p-2">{{ $license->customer_name }}</td>
                                         <td class="p-2" style="word-break: break-all;">{{ $license->address }}</td>
                                         <td class="p-2">{{ $license->contact }}</td>
@@ -174,6 +171,74 @@
             </div>
         </div>
     </div>
+    
+    <!-- Batch Upload Modal -->
+<div id="batch-upload-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out opacity-0">
+    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform transition-all duration-300 ease-in-out scale-95">
+        <button id="close-upload-modal-button" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Batch Upload Licenses</h3>
+
+        <div id="upload-form-container">
+            <div class="mb-4">
+                <button id="guide-button" class="text-blue-500 hover:underline">Use this guide</button>
+                <div id="guide-content" class="hidden mt-2 p-4 bg-gray-100 rounded-lg">
+                    <p>Your CSV or Excel file should have the following headers:</p>
+                    <ul class="list-disc list-inside">
+                        <li>vendo_box_no</li>
+                        <li>vendo_machine</li>
+                        <li>license</li>
+                        <li>device_id</li>
+                        <li>description</li>
+                        <li>date</li>
+                        <li>technician</li>
+                        <li>email</li>
+                        <li>customer_name</li>
+                        <li>address</li>
+                        <li>contact</li>
+                    </ul>
+                    <a href="/sample_imports/license_sample_imports.xlsx" class="text-blue-500 hover:underline mt-2 inline-block">Download sample Excel</a>
+                    <a href="/sample_imports/license_sample_imports.csv" class="text-blue-500 hover:underline mt-2 inline-block ml-4">Download sample CSV</a>
+                </div>
+            </div>
+
+            <form id="batch-upload-form" action="/licenses/import" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="upload-file">
+                        Select File
+                    </label>
+                    <input type="file" name="file" id="upload-file" class="w-full px-3 py-2 border rounded-lg">
+                </div>
+
+                <div id="preview-container" class="mb-4 hidden">
+                    <h4 class="font-bold">File Preview:</h4>
+                    <div id="file-preview" class="mt-2 p-2 border rounded-lg bg-gray-50 max-h-48 overflow-auto"></div>
+                </div>
+
+                <div id="progress-container" class="w-full bg-gray-200 rounded-full h-2.5 mb-4 hidden">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="button" id="cancel-upload-button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Upload</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="success-message" class="hidden text-center">
+            <svg class="w-16 h-16 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <h3 class="text-lg font-bold text-gray-800 mt-4">Upload Successful!</h3>
+        </div>
+    </div>
+</div>
 
     <!-- Add License Modal -->
     <div id="add-license-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out opacity-0">
@@ -225,8 +290,8 @@
                         class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
                 </div>
                 <div class="mb-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-1" for="pisofi_email_lpb_radius_id">PISOFI Email / LPB Radius ID</label>
-                    <input type="text" name="pisofi_email_lpb_radius_id" id="pisofi_email_lpb_radius_id" placeholder="e.g., customer@example.com"
+                    <label class="block text-gray-700 text-sm font-bold mb-1" for="email">PISOFI Email / LPB Radius ID</label>
+                    <input type="text" name="email" id="email" placeholder="e.g., customer@example.com"
                         class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
                 </div>
                 <div class="mb-2">
@@ -260,40 +325,27 @@
     </div>
 </div>
 
-    <!-- Archive Modal -->
-<div id="archive-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
-    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-8">
-        <div class="text-center">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                </svg>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-800">Archive License</h3>
-            <p class="text-gray-600 mt-2">Are you sure you want to archive this license?</p>
-        </div>
-        <div class="flex justify-center mt-8">
-             <button id="cancel-archive-button" type="button"
-                class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 mr-4 transition-colors duration-300 ease-in-out">
-                Cancel
-            </button>
-            <form id="archive-form" method="POST" class="inline-block">
-                @csrf
-                <button type="submit"
-                    class="px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-300 ease-in-out">
-                    Archive
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-
+<form id="archive-form" method="POST" class="hidden">@csrf</form>
 
 <script>
     const addLicenseButton = document.getElementById('add-license-button');
     const addLicenseModal = document.getElementById('add-license-modal');
     const closeModalButton = document.getElementById('close-modal-button');
     const cancelModalButton = document.getElementById('cancel-modal-button');
+    const batchUploadButton = document.getElementById('batch-upload-button');
+    const batchUploadModal = document.getElementById('batch-upload-modal');
+    const closeUploadModalButton = document.getElementById('close-upload-modal-button');
+    const cancelUploadButton = document.getElementById('cancel-upload-button');
+    const guideButton = document.getElementById('guide-button');
+    const guideContent = document.getElementById('guide-content');
+    const uploadFile = document.getElementById('upload-file');
+    const previewContainer = document.getElementById('preview-container');
+    const filePreview = document.getElementById('file-preview');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const uploadFormContainer = document.getElementById('upload-form-container');
+    const successMessage = document.getElementById('success-message');
+    const batchUploadForm = document.getElementById('batch-upload-form');
 
     function openModal(modal) {
         modal.classList.remove('hidden');
@@ -314,6 +366,10 @@
     addLicenseButton.addEventListener('click', () => {
         openModal(addLicenseModal);
     });
+    
+    batchUploadButton.addEventListener('click', () => {
+        openModal(batchUploadModal);
+    });
 
     closeModalButton.addEventListener('click', (e) => {
         e.preventDefault();
@@ -324,20 +380,83 @@
         e.preventDefault();
         closeModal(addLicenseModal);
     });
+    
+    closeUploadModalButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeModal(batchUploadModal);
+    });
 
-    const archiveModal = document.getElementById('archive-modal');
-    const cancelArchiveButton = document.getElementById('cancel-archive-button');
-    const archiveForm = document.getElementById('archive-form');
+    cancelUploadButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeModal(batchUploadModal);
+    });
+
+    guideButton.addEventListener('click', () => {
+        guideContent.classList.toggle('hidden');
+    });
+
+    uploadFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            previewContainer.classList.remove('hidden');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                filePreview.textContent = e.target.result;
+            };
+            reader.readAsText(file);
+        } else {
+            previewContainer.classList.add('hidden');
+        }
+    });
+
+    batchUploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        progressContainer.classList.remove('hidden');
+
+        const formData = new FormData(e.target);
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                progressBar.style.width = percentComplete + '%';
+            }
+        });
+
+        xhr.addEventListener('load', () => {
+            if (xhr.status === 200) {
+                uploadFormContainer.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+                 setTimeout(() => {
+                    closeModal(batchUploadModal);
+                    location.reload();
+                }, 2000);
+            } else {
+                // Handle error
+            }
+        });
+
+        xhr.open('POST', '/licenses/import');
+        xhr.send(formData);
+    });
 
     function showArchiveModal(id) {
-        archiveForm.action = `/licenses/${id}/archive`;
-        openModal(archiveModal);
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, archive it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('archive-form');
+                form.action = `/licenses/${id}/archive`;
+                form.submit();
+            }
+        })
     }
-
-    cancelArchiveButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeModal(archiveModal);
-    });
 
     const bulkActionsMenu = document.getElementById('bulk-actions-menu');
     const bulkActionsDropdown = document.getElementById('bulk-actions-dropdown');
@@ -367,16 +486,38 @@
 
     bulkArchive.addEventListener('click', function(e) {
         e.preventDefault();
-        bulkForm.action = '/licenses/bulk-archive';
-        bulkForm.submit();
+        Swal.fire({
+            title: 'Archive Selected',
+            text: "Are you sure you want to archive the selected licenses?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, archive them!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                bulkForm.action = '/licenses/bulk-archive';
+                bulkForm.submit();
+            }
+        });
     });
 
     bulkDelete.addEventListener('click', function(e) {
         e.preventDefault();
-        if (confirm('Are you sure you want to permanently delete the selected licenses?')) {
-            bulkForm.action = '/licenses/bulk-delete';
-            bulkForm.submit();
-        }
+        Swal.fire({
+            title: 'Delete Selected',
+            text: "Are you sure you want to permanently delete the selected licenses? This action cannot be undone.",
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete them!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                bulkForm.action = '/licenses/bulk-delete';
+                bulkForm.submit();
+            }
+        });
     });
 </script>
 

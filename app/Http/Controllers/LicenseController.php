@@ -50,7 +50,7 @@ class LicenseController extends Controller
         }
         
         $totalLicenses = License::count();
-        $licenses = $query->paginate(10)->appends($request->all());
+        $licenses = $query->paginate(50)->appends($request->all());
 
         return view('welcome', compact('licenses', 'totalLicenses'));
     }
@@ -123,7 +123,7 @@ class LicenseController extends Controller
 
     public function archived()
     {
-        $licenses = License::onlyTrashed()->paginate(10);
+        $licenses = License::onlyTrashed()->paginate(50);
         return view('archived', compact('licenses'));
     }
 

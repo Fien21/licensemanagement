@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('licenses', function (Blueprint $table) {
-            $table->string('email')->nullable()->change();
+            $table->string('sheet_name')->nullable()->after('contact');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('licenses', function (Blueprint $table) {
-            $table->string('email')->nullable(false)->change();
+            $table->dropColumn('sheet_name');
         });
     }
 };

@@ -26,8 +26,6 @@
             <nav class="mt-4">
                 <a href="/" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Dashboard</a>
                 <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Licenses</a>
-                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Students</a>
-                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Teachers</a>
                 <a href="/licenses/archived" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Archived</a>
                 <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Settings</a>
             </nav>
