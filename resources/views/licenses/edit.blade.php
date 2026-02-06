@@ -154,7 +154,7 @@
             e.preventDefault();
             
             let form = this;
-            let inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="date"]');
+            let inputs = form.querySelectorAll('input[type="text"]:not([name="vendo_machine"]), input[type="email"], input[type="date"]');
             let isEmpty = false;
 
             inputs.forEach(input => {

@@ -82,7 +82,8 @@ class LicenseController extends Controller
 
     public function edit(License $license)
     {
-        return view('licenses.edit', compact('license'));
+        $sheetNames = License::select('sheet_name')->distinct()->pluck('sheet_name');
+        return view('licenses.edit', compact('license', 'sheetNames'));
     }
 
     public function update(Request $request, License $license)
@@ -106,6 +107,13 @@ class LicenseController extends Controller
 
         return redirect('/licenses')->with('success', 'License updated successfully.');
     }
+
+    public function create()
+    {
+        $sheetNames = License::select('sheet_name')->distinct()->pluck('sheet_name');
+        return view('licenses.create', compact('sheetNames'));
+    }
+
 
     public function store(Request $request)
     {
