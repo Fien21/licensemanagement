@@ -1,33 +1,39 @@
-# Project Overview
+<!--
+This file is managed by Gemini AI. It is not recommended to modify this file manually.
+-->
 
-This project is a full-stack web application for managing software licenses. It is built with Laravel and is designed to be developed within the Firebase Studio (formerly Project IDX) environment. The focus is on creating a fast, robust, and scalable application by leveraging Laravel's powerful features for routing, data handling, and backend logic.
+# Project Blueprint
 
-# Implemented Features
+## Overview
 
-- **License Data Table:** A styled table that displays a paginated list of licenses with sorting capabilities.
-- **Modern UI:** A complete redesign of the user interface, including a sidebar, a main content area, and a modern table layout.
-- **Database Seeding:** The database is seeded with 50 dummy licenses.
-- **MVC Architecture:** The application follows the Model-View-Controller pattern, with a `LicenseController` to handle the business logic and a `License` model for database interactions.
-- **Routing:** Web routes are configured for all license management actions.
-- **Full CRUD and Archive Functionality:**
-    -   **Add:** A redesigned, compact, and user-friendly modal with a form to add new licenses, with backend validation.
-    -   **Edit/View:** (Placeholder buttons, functionality not fully implemented yet).
-    -   **Archive (Soft Delete):** Functionality to archive licenses, moving them out of the main view.
+This project is a full-stack web application built with Laravel, designed to serve as a comprehensive license management system. The application allows administrators to manage software licenses, including creating, importing, exporting, and archiving them. It also includes user management functionalities, enabling administrators to oversee user accounts.
 
-# Current Task: Remove Student and Teacher-Related Features
+## Key Features
 
-The current task is to remove all features and database columns related to students and teachers, while preserving the license management functionality.
+- **Dashboard:** Provides a central overview of the license and user data, featuring key statistics such as the total number of licenses and a summary of recent activities.
+- **License Management:**
+    - **CRUD Operations:** Administrators can create, read, update, and delete licenses.
+    - **Bulk Actions:** Supports bulk archiving and deleting of licenses for efficient management.
+    - **Import/Export:** Licenses can be imported from a CSV file and exported to a CSV file.
+    - **Archiving:** Licenses can be archived (soft-deleted) and restored, or permanently deleted from the archive.
+- **User Management:**
+    - **User Accounts:** Administrators can manage user accounts.
+    - **Archiving:** Users can be archived (soft-deleted) and restored, or permanently deleted from the archive.
+- **Search Functionality:** A search bar allows for easy filtering of licenses and users based on various attributes.
 
-## Plan
+## Design and Styling
 
-1.  **Update `blueprint.md`**: Reflect the removal of student and teacher concepts.
-2.  **Create Migration**: Generate a new migration to remove `student_id` and `assigned_teacher` columns from the `licenses` table.
-3.  **Run Migration**: Run the new migration.
-4.  **Clean up old migrations**: Delete the migrations that are now obsolete.
-5.  **Update `License` Model**: Remove `student_id` and `assigned_teacher` from fillable properties.
-6.  **Update `LicenseController`**: Remove logic for `student_id` and `assigned_teacher`.
-7.  **Update Views**: Remove table columns and form fields for `student_id` and `assigned_teacher` in blade files.
-8.  **Update `LicenseSeeder`**: Remove `student_id` and `assigned_teacher` from the seeded data.
-9.  **Delete User-related files**: Delete `User` model, controller, seeder, factory, and migrations as they seem to represent students/teachers.
-10. **Update `DatabaseSeeder`**: Remove call to `UserSeeder`.
-11. **Remove related exports/imports**: Check `LicensesExport` and `LicensesImport` and remove student/teacher fields.
+- **Layout:** A two-column layout is used, with a fixed sidebar for navigation and a main content area for the application's features.
+- **Sidebar:** The sidebar provides access to the main sections of the application, including the Dashboard, License Management, and User Management. It also includes expandable dropdown menus for sub-sections.
+- **Styling:** The application uses Tailwind CSS for a modern and responsive design. The color scheme is based on a combination of gray tones for the background and sidebar, with vibrant colors for interactive elements and notifications.
+- **Notifications:** Success and error messages are displayed using styled alerts to provide clear feedback to the user.
+
+## Current Task: Implement Archived Users Feature
+
+### Plan
+
+1.  **Update Sidebar:** Add a new link to the user dropdown menu in the sidebar for accessing the "Archived Users" page.
+2.  **Create Archived Users View:** Develop a new view that displays a table of archived users, with options to restore or permanently delete each user.
+3.  **Define Routes:** Add new routes in `routes/web.php` to handle the display of the archived users page, as well as the logic for restoring and deleting users.
+4.  **Implement Controller Logic:** Create the necessary methods in the `UserController` to fetch archived users and handle the restore and delete actions.
+5.  **Enable Soft Deletes for Users:** Add the `SoftDeletes` trait to the `User` model and create a database migration to add the `deleted_at` column to the `users` table.

@@ -66,7 +66,7 @@ class LicensesImport implements ToModel, WithHeadingRow, WithValidation, WithChu
         $this->successCount++;
 
         return new License([
-            'vendo_box_no'     => $row['vendo_box_no'] ?? null,
+            'vendo_box_no'     => $row['vendo_box_no'] ?? $row['vendo_box_no'] ?? null,
             'vendo_machine'    => $row['vendo_machine'] ?? null,
             'license'          => $row['license'] ?? null,
             'device_id'        => $row['device_id'] ?? null,

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class License extends Model
 {
@@ -22,6 +23,14 @@ class License extends Model
         'customer_name',
         'address',
         'contact',
-        'status',
+        'sheet_name',
     ];
+
+    public function getVendoBoxNoAttribute($value)
+    {
+        if ($this->date && $this->license && $this->device_id) {
+            return Carbon::parse($this->date)->format('m-d-y') . '/' . substr($this->license, -5) . '-' . substr($this->device_id, -5);
+        }
+        return $value;
+    }
 }

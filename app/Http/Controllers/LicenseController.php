@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\License;
 use Illuminate\Http\Request;
 use App\Imports\LicensesImport;
@@ -16,7 +14,8 @@ class LicenseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = License::query();
+        $view = $request->input('view', 'active');
+        $query = $view === 'archived' ? License::onlyTrashed() : License::query();
 
         // Filter by Sheet Name (Tabs)
         if ($request->filled('sheet_name')) {
@@ -59,6 +58,7 @@ class LicenseController extends Controller
         }
         
         $totalLicenses = License::count();
+        $totalArchived = License::onlyTrashed()->count();
 
         // Get counts for each category tab
         $sheetCounts = License::select('sheet_name', DB::raw('count(*) as total'))
@@ -68,7 +68,43 @@ class LicenseController extends Controller
 
         $licenses = $query->paginate(50)->appends($request->all());
 
-        return view('welcome', compact('licenses', 'totalLicenses', 'sheetCounts'));
+        if ($view === 'archived') {
+            return view('licenses.archived', compact('licenses', 'totalLicenses', 'sheetCounts', 'view', 'totalArchived'));
+        }
+
+        return view('licenses.index', compact('licenses', 'totalLicenses', 'sheetCounts', 'view', 'totalArchived'));
+    }
+
+    public function show(License $license)
+    {
+        return view('licenses.show', compact('license'));
+    }
+
+    public function edit(License $license)
+    {
+        return view('licenses.edit', compact('license'));
+    }
+
+    public function update(Request $request, License $license)
+    {
+        $request->validate([
+            'sheet_name' => 'required',
+            'vendo_box_no' => 'nullable',
+            'vendo_machine' => 'nullable',
+            'license' => 'nullable',
+            'device_id' => 'nullable',
+            'description' => 'nullable',
+            'date' => 'nullable|date',
+            'technician' => 'nullable',
+            'email' => 'required',
+            'customer_name' => 'nullable',
+            'address' => 'nullable',
+            'contact' => 'nullable',
+        ]);
+
+        $license->update($request->all());
+
+        return redirect('/licenses')->with('success', 'License updated successfully.');
     }
 
     public function store(Request $request)
@@ -90,7 +126,7 @@ class LicenseController extends Controller
 
         License::create($request->all());
 
-        return redirect('/')->with('success', 'License created successfully.');
+        return redirect('/licenses')->with('success', 'License created successfully.');
     }
 
     public function import(Request $request)
@@ -121,10 +157,10 @@ class LicenseController extends Controller
             if ($failures->count() > 5) {
                 $errorMessage .= ' (see log for all errors)';
             }
-            return redirect('/')->with('error', $errorMessage);
+            return redirect('/licenses')->with('error', $errorMessage);
         }
 
-        return redirect('/')->with('success', $successCount . ' licenses imported successfully.');
+        return redirect('/licenses')->with('success', $successCount . ' licenses imported successfully.');
     }
 
     public function export(Request $request)
@@ -170,25 +206,24 @@ class LicenseController extends Controller
     public function archive(License $license)
     {
         $license->delete();
-        return redirect('/')->with('success', 'License archived successfully.');
+        return redirect('/licenses')->with('success', 'License archived successfully.');
     }
 
-    public function archived()
+    public function archived(Request $request)
     {
-        $licenses = License::onlyTrashed()->paginate(50);
-        return view('archived', compact('licenses'));
+        return redirect()->route('licenses.index', ['view' => 'archived']);
     }
 
     public function restore($id)
     {
         License::onlyTrashed()->find($id)->restore();
-        return redirect('/licenses/archived')->with('success', 'License restored successfully.');
+        return redirect()->route('licenses.index', ['view' => 'archived'])->with('success', 'License restored successfully.');
     }
 
     public function delete($id)
     {
         License::onlyTrashed()->find($id)->forceDelete();
-        return redirect('/licenses/archived')->with('success', 'License deleted permanently.');
+        return redirect()->route('licenses.index', ['view' => 'archived'])->with('success', 'License deleted permanently.');
     }
 
     public function bulkArchive(Request $request)
@@ -197,7 +232,7 @@ class LicenseController extends Controller
         if($ids) {
             License::whereIn('id', $ids)->delete();
         }
-        return redirect('/')->with('success', 'Selected licenses have been archived.');
+        return redirect('/licenses')->with('success', 'Selected licenses have been archived.');
     }
 
     public function bulkDelete(Request $request)
@@ -206,6 +241,6 @@ class LicenseController extends Controller
         if($ids) {
             License::whereIn('id', $ids)->forceDelete();
         }
-        return redirect('/')->with('success', 'Selected licenses have been permanently deleted.');
+        return redirect()->route('licenses.index', ['view' => 'archived'])->with('success', 'Selected licenses have been permanently deleted.');
     }
 }
