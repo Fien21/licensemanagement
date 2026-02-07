@@ -250,7 +250,6 @@
                         <ul class="list-disc list-inside">
                             <li>sheet_name</li>
                             <li>vendo_box_no</li>
-                            <li>vendo_machine</li>
                             <li>license</li>
                             <li>device_id</li>
                             <li>description</li>
@@ -303,20 +302,21 @@
 
     <!-- Add License Modal -->
     <div id="add-license-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out opacity-0">
-        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-4xl p-4 transform transition-all duration-300 ease-in-out scale-95">
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 transform transition-all duration-300 ease-in-out scale-95">
             <button id="close-modal-button" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
 
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Add New License</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-5">Add New License</h3>
 
             <form action="/licenses" method="POST" id="add-license-form">
                 @csrf
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-                    
-                    <div class="mb-2 md:col-span-2">
+                
+                <!-- Section 1: Core Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 mb-6">
+                    <div class="md:col-span-2">
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="sheet_name">Sheet Name (Category)</label>
                         <select name="sheet_name" id="sheet_name" class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('sheet_name') border-red-500 @enderror">
                             <option value="">Select Category...</option>
@@ -327,87 +327,98 @@
                         @error('sheet_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="mb-2">
+                    <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="vendo_box_no">Vendo Box No</label>
-                        <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" placeholder="e.g., V123"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('vendo_box_no') border-red-500 @enderror">
+                        <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" placeholder="e.g., V123" readonly
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('vendo_box_no') border-red-500 @enderror">
                         @error('vendo_box_no') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="vendo_machine">Vendo Machine</label>
-                        <input type="text" name="vendo_machine" id="vendo_machine" value="{{ old('vendo_machine') }}" placeholder="e.g., PISOFI-XYZ"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('vendo_machine') border-red-500 @enderror">
-                        @error('vendo_machine') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="mb-2">
+
+                    <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="license">License</label>
                         <input type="text" name="license" id="license" value="{{ old('license') }}" placeholder="Enter the license key"
                             class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('license') border-red-500 @enderror">
                         @error('license') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="mb-2">
+
+                    <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="device_id">Device ID</label>
                         <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" placeholder="Enter the device ID"
                             class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('device_id') border-red-500 @enderror">
                         @error('device_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="mb-2">
+
+                    <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="date">Date</label>
                         <input type="date" name="date" id="date" value="{{ old('date') }}"
                             class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('date') border-red-500 @enderror">
                         @error('date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="description">Description</label>
-                        <textarea name="description" id="description" placeholder="Add any relevant notes..." rows="2"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
-                        @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="mb-2">
+
+                    <div class="md:col-span-2">
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="technician">Technician</label>
                         <input type="text" name="technician" id="technician" value="{{ old('technician') }}" placeholder="e.g., John Doe"
                             class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('technician') border-red-500 @enderror">
                         @error('technician') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="email">PISOFI Email</label>
-                        <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('email') border-red-500 @enderror">
-                        @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="lpb_radius_id">LPB Radius ID</label>
-                        <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('lpb_radius_id') border-red-500 @enderror">
-                        @error('lpb_radius_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="customer_name">Customer Name</label>
-                        <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" placeholder="e.g., Jane Smith"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('customer_name') border-red-500 @enderror">
-                        @error('customer_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="address">Address</label>
-                        <input type="text" name="address" id="address" value="{{ old('address') }}" placeholder="e.g., 123 Main St, Anytown"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('address') border-red-500 @enderror">
-                        @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="contact">Contact</label>
-                        <input type="text" name="contact" id="contact" value="{{ old('contact') }}" placeholder="e.g., 555-1234"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('contact') border-red-500 @enderror">
-                        @error('contact') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-1" for="description">Description</label>
+                        <textarea name="description" id="description" placeholder="Add any relevant notes..." rows="2"
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                        @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                <div class="flex justify-end mt-3 border-t pt-3">
+                <!-- Section 2: Customer Information Container -->
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
+                    <h4 class="text-md font-bold text-gray-600 mb-3 border-b pb-1">Customer Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                        
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-1" for="email">PISOFI Email</label>
+                            <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com"
+                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('email') border-red-500 @enderror">
+                            @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-1" for="lpb_radius_id">LPB Radius ID</label>
+                            <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345"
+                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('lpb_radius_id') border-red-500 @enderror">
+                            @error('lpb_radius_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-1" for="customer_name">Customer Name</label>
+                            <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" placeholder="e.g., Jane Smith" readonly
+                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('customer_name') border-red-500 @enderror">
+                            @error('customer_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-1" for="contact">Contact</label>
+                            <input type="text" name="contact" id="contact" value="{{ old('contact') }}" placeholder="e.g., 555-1234" readonly
+                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('contact') border-red-500 @enderror">
+                            @error('contact') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-gray-700 text-sm font-bold mb-1" for="address">Address</label>
+                            <input type="text" name="address" id="address" value="{{ old('address') }}" placeholder="e.g., 123 Main St, Anytown" readonly
+                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('address') border-red-500 @enderror">
+                            @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-4 border-t pt-4">
                     <button id="cancel-modal-button" type="button"
-                        class="px-4 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 mr-2 transition-colors duration-300 ease-in-out text-sm">
+                        class="px-5 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 mr-2 transition-colors duration-300 ease-in-out text-sm">
                         Cancel
                     </button>
                     <button type="submit"
-                        class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                        class="px-5 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
                         Submit
                     </button>
                 </div>

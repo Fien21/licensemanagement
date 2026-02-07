@@ -32,7 +32,6 @@
                     <div class="flex items-center space-x-4">
                         <div class="p-2 bg-indigo-100 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="id-card" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                         </div>
@@ -55,77 +54,87 @@
                     </div>
                     
                     <div class="p-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Section 1: Core Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                            
                             <!-- Sheet Name -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Sheet Name</p>
+                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all md:col-span-2 lg:col-span-1">
+                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Branch Name</p>
                                 <p class="text-gray-900 font-medium text-lg">{{ $license->sheet_name }}</p>
                             </div>
 
-                            <!-- Vendo Machine -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Vendo Machine</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->vendo_machine }}</p>
-                            </div>
-
-                            <!-- License -->
+                            <!-- License Key -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
                                 <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">License Key</p>
                                 <p class="text-gray-900 font-mono font-semibold text-lg bg-gray-100 px-2 py-1 rounded inline-block">{{ $license->license }}</p>
                             </div>
 
-                            <!-- Customer Name -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Customer Name</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->customer_name }}</p>
-                            </div>
-
-                            <!-- Device ID (Swapped here) -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Device ID</p>
-                                <p class="text-gray-900 font-mono text-sm bg-blue-50 text-blue-800 px-2 py-1 rounded inline-block">{{ $license->device_id }}</p>
-                            </div>
-
-                            <!-- Vendo Box No (Swapped here) -->
+                            <!-- Vendo Box No -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
                                 <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Vendo Box No.</p>
                                 <p class="text-gray-900 font-medium text-lg">{{ $license->vendo_box_no }}</p>
                             </div>
 
-                            <!-- Contact -->
+                            <!-- Device ID -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Contact Number</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->contact }}</p>
+                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Device ID</p>
+                                <p class="text-gray-900 font-mono text-sm bg-blue-50 text-blue-800 px-2 py-1 rounded inline-block">{{ $license->device_id }}</p>
                             </div>
 
-                            <!-- Date -->
+                            <!-- Registration Date -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
                                 <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Registration Date</p>
                                 <p class="text-gray-900 font-medium text-lg">{{ $license->date }}</p>
                             </div>
 
                             <!-- Technician -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
+                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all lg:col-span-1">
                                 <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Assigned Technician</p>
                                 <p class="text-gray-900 font-medium text-lg">{{ $license->technician }}</p>
                             </div>
 
-                            <!-- Email (Swapped here) -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Email Address</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->email }}</p>
-                            </div>
-
-                            <!-- Address (Swapped here) -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Address</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->address }}</p>
-                            </div>
-
                             <!-- Description -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all lg:col-span-1">
+                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all md:col-span-2 lg:col-span-2">
                                 <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Description</p>
                                 <p class="text-gray-700 leading-relaxed">{{ $license->description }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Customer Information Container (Leaving blanks if data is missing) -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
+                            <h4 class="text-md font-bold text-gray-600 mb-6 border-b pb-2">Customer Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                
+                                <!-- PisoFi Email -->
+                                <div class="group">
+                                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">PISOFI Email</p>
+                                    <p class="text-gray-900 font-medium text-lg break-all">{{ $license->email }}</p>
+                                </div>
+
+                                <!-- LPB Radius ID -->
+                                <div class="group">
+                                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">LPB Radius ID</p>
+                                    <p class="text-gray-900 font-mono font-medium text-lg">{{ $license->lpb_radius_id }}</p>
+                                </div>
+
+                                <!-- Customer Name -->
+                                <div class="group">
+                                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Customer Name</p>
+                                    <p class="text-gray-900 font-medium text-lg">{{ $license->customer_name }}</p>
+                                </div>
+
+                                <!-- Contact Number -->
+                                <div class="group">
+                                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Contact Number</p>
+                                    <p class="text-gray-900 font-medium text-lg">{{ $license->contact }}</p>
+                                </div>
+
+                                <!-- Address -->
+                                <div class="group md:col-span-2">
+                                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Address</p>
+                                    <p class="text-gray-900 font-medium text-lg">{{ $license->address }}</p>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -196,101 +205,101 @@
             </div>
         </div>
     </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-    const historyLogBody = document.getElementById('history-log-body');
-    const searchInput = document.getElementById('history-search');
-    const yearSort = document.getElementById('sort-year');
-    const monthSort = document.getElementById('sort-month');
-    const daySort = document.getElementById('sort-day');
+            const historyLogBody = document.getElementById('history-log-body');
+            const searchInput = document.getElementById('history-search');
+            const yearSort = document.getElementById('sort-year');
+            const monthSort = document.getElementById('sort-month');
+            const daySort = document.getElementById('sort-day');
 
-    const historyData = @json($historyLogs);
+            const historyData = @json($historyLogs);
 
-    function populateHistoryTable(data) {
-        historyLogBody.innerHTML = '';
-        if (data.length === 0) {
-            historyLogBody.innerHTML = '<tr><td colspan="4" class="text-center py-4">No history found.</td></tr>';
-            return;
-        }
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="px-6 py-4 whitespace-nowrap">${item.date}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${item.action}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${item.user}</td>
-                <td class="px-6 py-4 whitespace-nowrap">${item.details}</td>
-            `;
-            historyLogBody.appendChild(row);
+            function populateHistoryTable(data) {
+                historyLogBody.innerHTML = '';
+                if (data.length === 0) {
+                    historyLogBody.innerHTML = '<tr><td colspan="4" class="text-center py-4">No history found.</td></tr>';
+                    return;
+                }
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">${item.date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.action}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.user}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.details}</td>
+                    `;
+                    historyLogBody.appendChild(row);
+                });
+            }
+
+            function populateSortOptions() {
+                const years = [...new Set(historyData.map(item => new Date(item.date).getFullYear()))];
+                years.sort().reverse().forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSort.appendChild(option);
+                });
+
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.textContent = month;
+                    monthSort.appendChild(option);
+                });
+
+                for (let i = 1; i <= 31; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    daySort.appendChild(option);
+                }
+            }
+
+            function filterAndSortHistory() {
+                let filteredData = [...historyData];
+
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    filteredData = filteredData.filter(item =>
+                        Object.values(item).some(val =>
+                            val.toString().toLowerCase().includes(searchTerm)
+                        )
+                    );
+                }
+
+                const year = yearSort.value;
+                if (year) {
+                    filteredData = filteredData.filter(item => new Date(item.date).getFullYear() == year);
+                }
+
+                const month = monthSort.value;
+                if (month) {
+                    filteredData = filteredData.filter(item => new Date(item.date).getMonth() + 1 == month);
+                }
+
+                const day = daySort.value;
+                if (day) {
+                    filteredData = filteredData.filter(item => new Date(item.date).getDate() == day);
+                }
+
+                populateHistoryTable(filteredData);
+            }
+
+            // Initial population
+            populateHistoryTable(historyData);
+            populateSortOptions();
+
+            // Event Listeners
+            searchInput.addEventListener('input', filterAndSortHistory);
+            yearSort.addEventListener('change', filterAndSortHistory);
+            monthSort.addEventListener('change', filterAndSortHistory);
+            daySort.addEventListener('change', filterAndSortHistory);
         });
-    }
-
-    function populateSortOptions() {
-        const years = [...new Set(historyData.map(item => new Date(item.date).getFullYear()))];
-        years.sort().reverse().forEach(year => {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            yearSort.appendChild(option);
-        });
-
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        months.forEach((month, index) => {
-            const option = document.createElement('option');
-            option.value = index + 1;
-            option.textContent = month;
-            monthSort.appendChild(option);
-        });
-
-        for (let i = 1; i <= 31; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            daySort.appendChild(option);
-        }
-    }
-
-    function filterAndSortHistory() {
-        let filteredData = [...historyData];
-
-        const searchTerm = searchInput.value.toLowerCase();
-        if (searchTerm) {
-            filteredData = filteredData.filter(item =>
-                Object.values(item).some(val =>
-                    val.toString().toLowerCase().includes(searchTerm)
-                )
-            );
-        }
-
-        const year = yearSort.value;
-        if (year) {
-            filteredData = filteredData.filter(item => new Date(item.date).getFullYear() == year);
-        }
-
-        const month = monthSort.value;
-        if (month) {
-            filteredData = filteredData.filter(item => new Date(item.date).getMonth() + 1 == month);
-        }
-
-        const day = daySort.value;
-        if (day) {
-            filteredData = filteredData.filter(item => new Date(item.date).getDate() == day);
-        }
-
-        populateHistoryTable(filteredData);
-    }
-
-    // Initial population
-    populateHistoryTable(historyData);
-    populateSortOptions();
-
-    // Event Listeners
-    searchInput.addEventListener('input', filterAndSortHistory);
-    yearSort.addEventListener('change', filterAndSortHistory);
-    monthSort.addEventListener('change', filterAndSortHistory);
-    daySort.addEventListener('change', filterAndSortHistory);
-});
-</script>
-
+    </script>
 </body>
 
 </html>

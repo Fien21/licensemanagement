@@ -20,94 +20,104 @@
 
         <form action="/licenses" method="POST">
             @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Sheet Name -->
-                <div class="md:col-span-2">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sheet_name">Sheet Name</label>
-                    <select name="sheet_name" id="sheet_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('sheet_name') border-red-500 @enderror">
-                        <option value="">Select a sheet</option>
-                        @foreach($sheetNames as $sheetName)
-                            <option value="{{ $sheetName }}" {{ old('sheet_name') == $sheetName ? 'selected' : '' }}>{{ $sheetName }}</option>
-                        @endforeach
-                    </select>
-                    @error('sheet_name')
-                        <p class="text-red-500 text-xs italic">{{ $message }}</p>
-                    @enderror
-                </div>
+            
+            <!-- Main License Details Container -->
+            <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Sheet Name -->
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="sheet_name">Sheet Name</label>
+                        <select name="sheet_name" id="sheet_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('sheet_name') border-red-500 @enderror">
+                            <option value="">Select a sheet</option>
+                            @foreach($sheetNames as $sheetName)
+                                <option value="{{ $sheetName }}" {{ old('sheet_name') == $sheetName ? 'selected' : '' }}>{{ $sheetName }}</option>
+                            @endforeach
+                        </select>
+                        @error('sheet_name')
+                            <p class="text-red-500 text-xs italic">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- Vendo Box No -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="vendo_box_no">Vendo Box No.</label>
-                    <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                    <!-- Vendo Box No -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="vendo_box_no">Vendo Box No.</label>
+                        <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- License -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="license">License</label>
-                    <input type="text" name="license" id="license" value="{{ old('license') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                    <!-- License -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="license">License</label>
+                        <input type="text" name="license" id="license" value="{{ old('license') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- Device ID -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="device_id">Device ID</label>
-                    <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                    <!-- Device ID -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="device_id">Device ID</label>
+                        <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- Date -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Date</label>
-                    <input type="date" name="date" id="date" value="{{ old('date') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                    <!-- Date -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Date</label>
+                        <input type="date" name="date" id="date" value="{{ old('date') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- Description -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
-                    <input type="text" name="description" id="description" value="{{ old('description') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                    <!-- Description -->
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
+                        <input type="text" name="description" id="description" value="{{ old('description') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- Technician -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="technician">Technician</label>
-                    <input type="text" name="technician" id="technician" value="{{ old('technician') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                    <!-- Technician -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="technician">Technician</label>
+                        <input type="text" name="technician" id="technician" value="{{ old('technician') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- PISOFI Email -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">PISOFI Email</label>
-                    <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') border-red-500 @enderror">
-                    @error('email')
-                        <p class="text-red-500 text-xs italic">{{ $message }}</p>
-                    @enderror
-                </div>
+                    <!-- PISOFI Email -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">PISOFI Email</label>
+                        <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') border-red-500 @enderror">
+                        @error('email')
+                            <p class="text-red-500 text-xs italic">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                <!-- LPB Radius ID -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="lpb_radius_id">LPB Radius ID</label>
-                    <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <!-- LPB Radius ID -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="lpb_radius_id">LPB Radius ID</label>
+                        <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
                 </div>
+            </div>
 
-                <!-- Customer Name -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="customer_name">Customer Name</label>
-                    <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+            <!-- Separate Container for Customer Information -->
+            <div class="bg-blue-50 border-t-4 border-blue-500 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <h2 class="text-lg font-bold text-blue-800 mb-4 border-b border-blue-200 pb-2">Customer Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Customer Name -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="customer_name">Customer Name</label>
+                        <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" placeholder="e.g. Jane Smith" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- Address -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Address</label>
-                    <input type="text" name="address" id="address" value="{{ old('address') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+                    <!-- Contact -->
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="contact">Contact</label>
+                        <input type="text" name="contact" id="contact" value="{{ old('contact') }}" placeholder="e.g. 09123456789" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
 
-                <!-- Contact -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="contact">Contact</label>
-                    <input type="text" name="contact" id="contact" value="{{ old('contact') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <!-- Address -->
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Address</label>
+                        <input type="text" name="address" id="address" value="{{ old('address') }}" placeholder="e.g. 123 Street, City" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
                 </div>
             </div>
 
             <div class="flex items-center justify-between mt-6">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add License</button>
-                <a href="/licenses" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">Cancel</a>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition duration-200">Submit License</button>
+                <a href="/licenses" class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800">Cancel</a>
             </div>
         </form>
     </div>
