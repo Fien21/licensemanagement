@@ -360,6 +360,9 @@
                     <div class="md:col-span-2">
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="technician">Technician</label>
                         <input type="text" name="technician" id="technician" value="{{ old('technician') }}" placeholder="e.g., John Doe"
+                            oninput="this.value = this.value.replace(/[0-9]/g, '')"
+                            pattern="^[a-zA-Z\s]*$"
+                            title="Technician name should only contain letters and spaces"
                             class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('technician') border-red-500 @enderror">
                         @error('technician') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
@@ -455,14 +458,14 @@
         const successMessage = document.getElementById('success-message');
         const batchUploadForm = document.getElementById('batch-upload-form');
 
-        // NEW: Customer Info elements for automatic preview
+        // Automatic Data Preview Elements
         const emailInput = document.getElementById('email');
         const lpbIdInput = document.getElementById('lpb_radius_id');
         const customerNameInput = document.getElementById('customer_name');
         const contactInput = document.getElementById('contact');
         const addressInput = document.getElementById('address');
 
-        // NEW: Function to fetch and preview user data
+        // Function to fetch and preview user data
         function fetchUserData(searchValue) {
             if (!searchValue || searchValue.length < 3) return;
 
@@ -489,7 +492,7 @@
             .catch(error => console.error('Search error:', error));
         }
 
-        // Listeners for automatic preview
+        // Listeners for automatic preview (fires when user leaves the field)
         emailInput.addEventListener('blur', function() { fetchUserData(this.value); });
         lpbIdInput.addEventListener('blur', function() { fetchUserData(this.value); });
 

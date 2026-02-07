@@ -2,27 +2,25 @@
 
 ## Overview
 
-This project is a Laravel-based license management system. It allows users to manage software licenses, including creating, viewing, updating, and archiving them.
+This project is a full-stack web application built with Laravel. It is designed to be a license management system.
 
-## Features & Design
+## Features
 
-### Implemented
+*   **Dashboard:** Displays statistics about licenses and users.
+*   **License Management:** Allows users to create, read, update, and delete licenses.
+*   **User Management:** Allows users to create, read, update, and delete users.
 
-*   **License Management:**
-    *   CRUD functionality for licenses.
-    *   Batch upload of licenses.
-    *   Filtering and sorting of licenses.
-    *   Archiving and permanent deletion of licenses.
-*   **User Management:**
-    *   CRUD functionality for users.
-*   **Styling:**
-    *   The application uses a modern design with a blue and green color scheme.
-    *   It features a responsive layout with a sidebar for navigation.
-    *   Interactive elements like buttons and forms are styled for a user-friendly experience.
+## Design
 
-### Current Task
+*   **Framework:** Laravel
+*   **Database:** SQLite
+*   **Frontend:** Blade templates with basic CSS.
 
-*   **Remove "Vendo Machine" Field:**
-    *   Remove the "Vendo Machine" column from the licenses table view.
-    *   Remove the "Vendo Machine" field from the database.
-    *   Update the controller and model to remove references to "vendo_machine".
+## Current Task
+
+### Fix Database Compatibility Issue
+
+*   **Goal:** Resolve the `Illuminate\Database\QueryException` caused by using the `MONTH()` and `YEAR()` functions, which are not available in SQLite.
+*   **Plan:**
+    1.  Modify `app/Http/Controllers/DashboardController.php` to use the `strftime()` function for date extraction in the `getLicensesActivityData()` method.
+    2.  Replace the `whereYear()` method with a `where()` clause that uses a raw DB expression with `strftime()` to ensure compatibility with SQLite.
