@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
     git \
-    && docker-php-ext-install pdo pdo_mysql zip
+    sqlite3 \
+    && docker-php-ext-install pdo pdo_mysql pdo_sqlite zip
 
 # Set Apache document root to Laravel public folder
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
@@ -18,5 +19,9 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 # Copy project files
 COPY . /var/www/html
 
+# Create SQLite database file
+RUN mkdir -p /var/www/html/database && \
+    touch /var/www/html/database/database.sqlite
+
 # Set permissions (Laravel requirement)
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
