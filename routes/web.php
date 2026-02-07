@@ -47,6 +47,4 @@ Route::post('/users/archived/{id}/delete', [UserController::class, 'delete'])->n
 Route::post('/users/bulk-archive', [UserController::class, 'bulkArchive'])->name('users.bulkArchive');
 Route::post('/users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulkDelete');
 Route::post('/users/bulk-restore', [UserController::class, 'bulkRestore'])->name('users.bulkRestore');
-
-// User search route
 Route::post('/users/search', [UserController::class, 'search'])->name('users.search');

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Laravel - License Manager</title>
 
+    <!-- CSRF Token for AJAX Search -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
@@ -451,6 +454,44 @@
         const uploadFormContainer = document.getElementById('upload-form-container');
         const successMessage = document.getElementById('success-message');
         const batchUploadForm = document.getElementById('batch-upload-form');
+
+        // NEW: Customer Info elements for automatic preview
+        const emailInput = document.getElementById('email');
+        const lpbIdInput = document.getElementById('lpb_radius_id');
+        const customerNameInput = document.getElementById('customer_name');
+        const contactInput = document.getElementById('contact');
+        const addressInput = document.getElementById('address');
+
+        // NEW: Function to fetch and preview user data
+        function fetchUserData(searchValue) {
+            if (!searchValue || searchValue.length < 3) return;
+
+            fetch("{{ route('users.search') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ query: searchValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.not_found) {
+                    customerNameInput.value = data.customer_name || '';
+                    contactInput.value = data.contact || '';
+                    addressInput.value = data.address || '';
+                    
+                    // Cross-fill empty search fields
+                    if (!emailInput.value && data.email) emailInput.value = data.email;
+                    if (!lpbIdInput.value && data.lpb_radius_id) lpbIdInput.value = data.lpb_radius_id;
+                }
+            })
+            .catch(error => console.error('Search error:', error));
+        }
+
+        // Listeners for automatic preview
+        emailInput.addEventListener('blur', function() { fetchUserData(this.value); });
+        lpbIdInput.addEventListener('blur', function() { fetchUserData(this.value); });
 
         function openModal(modal) {
             modal.classList.remove('hidden');

@@ -123,4 +123,16 @@ class UserController extends Controller
         }
         return redirect()->back()->with('error', 'No users selected.');
     }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $user = User::where('email', $query)->orWhere('lpb_radius_id', $query)->first();
+
+        if ($user) {
+            return response()->json($user);
+        }
+
+        return response()->json(['not_found' => true], 404);
+    }
 }

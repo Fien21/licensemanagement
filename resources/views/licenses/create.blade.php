@@ -12,6 +12,8 @@
 
     <!-- Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CSRF Token for AJAX -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body class="antialiased bg-gray-100">
@@ -41,39 +43,46 @@
                     <!-- Vendo Box No -->
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="vendo_box_no">Vendo Box No.</label>
-                        <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" placeholder="e.g., V123" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
 
                     <!-- License -->
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="license">License</label>
-                        <input type="text" name="license" id="license" value="{{ old('license') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="text" name="license" id="license" value="{{ old('license') }}" placeholder="Enter the license key" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
 
                     <!-- Device ID -->
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="device_id">Device ID</label>
-                        <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" placeholder="Enter the device ID" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
 
                     <!-- Date -->
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Date</label>
-                        <input type="date" name="date" id="date" value="{{ old('date') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <input type="date" name="date" id="date" value="{{ old('date', date('Y-m-d')) }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+
+                    <!-- Technician -->
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="technician">Technician</label>
+                        <input type="text" name="technician" id="technician" value="{{ old('technician') }}" placeholder="e.g., John Doe" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
 
                     <!-- Description -->
                     <div class="md:col-span-2">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
-                        <input type="text" name="description" id="description" value="{{ old('description') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <textarea name="description" id="description" rows="3" placeholder="Add any relevant notes..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ old('description') }}</textarea>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Technician -->
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="technician">Technician</label>
-                        <input type="text" name="technician" id="technician" value="{{ old('technician') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    </div>
-
+            <!-- Separate Container for Customer Information -->
+            <div class="bg-blue-50 border-t-4 border-blue-500 shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <h2 class="text-lg font-bold text-blue-800 mb-4 border-b border-blue-200 pb-2">Customer Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
                     <!-- PISOFI Email -->
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="email">PISOFI Email</label>
@@ -88,13 +97,7 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="lpb_radius_id">LPB Radius ID</label>
                         <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-                </div>
-            </div>
 
-            <!-- Separate Container for Customer Information -->
-            <div class="bg-blue-50 border-t-4 border-blue-500 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h2 class="text-lg font-bold text-blue-800 mb-4 border-b border-blue-200 pb-2">Customer Information</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Customer Name -->
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="customer_name">Customer Name</label>
@@ -116,11 +119,62 @@
             </div>
 
             <div class="flex items-center justify-between mt-6">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition duration-200">Submit License</button>
-                <a href="/licenses" class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800">Cancel</a>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition duration-200">Submit</button>
+                <a href="/licenses" class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800 bg-gray-200 px-4 py-2 rounded">Cancel</a>
             </div>
         </form>
     </div>
-</body>
 
+    <!-- Script to Auto-fill User Data -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            const lpbIdInput = document.getElementById('lpb_radius_id');
+            const customerNameInput = document.getElementById('customer_name');
+            const contactInput = document.getElementById('contact');
+            const addressInput = document.getElementById('address');
+
+            let timeout = null;
+
+            function searchUser(value) {
+                if (value.length < 3) return; // Don't search for very short strings
+
+                fetch("{{ route('users.search') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ query: value })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.not_found) {
+                        // Populate the fields with found data
+                        customerNameInput.value = data.customer_name || '';
+                        contactInput.value = data.contact || '';
+                        addressInput.value = data.address || '';
+                        
+                        // Cross-fill the search fields if they are empty
+                        if (!emailInput.value && data.email) emailInput.value = data.email;
+                        if (!lpbIdInput.value && data.lpb_radius_id) lpbIdInput.value = data.lpb_radius_id;
+                    }
+                })
+                .catch(error => console.error('Error fetching user:', error));
+            }
+
+            // Listen for input on Email
+            emailInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => searchUser(this.value), 500);
+            });
+
+            // Listen for input on Radius ID
+            lpbIdInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => searchUser(this.value), 500);
+            });
+        });
+    </script>
+</body>
 </html>
