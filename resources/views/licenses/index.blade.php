@@ -70,7 +70,6 @@
                             <div id="bulk-actions-dropdown" class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden">
                                 <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="bulk-actions-menu">
                                     <a href="#" id="bulk-archive" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Archive Selected</a>
-                                    <a href="#" id="bulk-delete" class="block px-4 py-2 text-sm text-red-700 hover:bg-gray-100" role="menuitem">Delete Selected</a>
                                 </div>
                             </div>
                         </div>
@@ -377,8 +376,12 @@
                         
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-1" for="email">PISOFI Email</label>
-                            <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com"
-                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('email') border-red-500 @enderror">
+                            <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@gmail.com"
+                                pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" 
+                                title="Strictly use a valid @gmail.com address"
+                                oninvalid="this.setCustomValidity('Please provide a valid Gmail address ending in @gmail.com')"
+                                oninput="this.setCustomValidity('')"
+                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('email') border-red-500 @enderror" required>
                             @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
@@ -556,7 +559,6 @@
 
         const bulkForm = document.getElementById('bulk-form');
         const bulkArchive = document.getElementById('bulk-archive');
-        const bulkDelete = document.getElementById('bulk-delete');
 
         bulkArchive.addEventListener('click', function(e) {
             e.preventDefault();
@@ -571,24 +573,6 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     bulkForm.action = '/licenses/bulk-archive';
-                    bulkForm.submit();
-                }
-            });
-        });
-
-        bulkDelete.addEventListener('click', function(e) {
-            e.preventDefault();
-            const checkedCount = document.querySelectorAll('.license-checkbox:checked').length;
-            if(checkedCount === 0) return Swal.fire('Wait', 'Select at least one license first.', 'info');
-            Swal.fire({
-                title: 'Delete Selected?',
-                text: "This will permanently remove the selected licenses!",
-                icon: 'error',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete permanently!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    bulkForm.action = '/licenses/bulk-delete';
                     bulkForm.submit();
                 }
             });

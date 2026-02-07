@@ -72,6 +72,7 @@
             <!-- Content -->
             <div class="flex-1 overflow-x-auto p-4">
                 <div class="bg-white rounded-lg shadow-lg p-6">
+                    <!-- Wrapped in Bulk Action Form -->
                     <form id="bulk-form" method="POST">
                         @csrf
                         <div class="overflow-x-auto">
@@ -100,7 +101,7 @@
                                         <td class="p-3 font-mono text-xs">{{ $license->lpb_radius_id }}</td>
                                         <td class="p-3">{{ $license->customer_name }}</td>
                                         <td class="p-3 text-gray-500 text-xs">
-                                            {{ $license->deleted_at ? $license->deleted_at->format('M d, Y h:i A') : 'N/A' }}
+                                            {{ $license->deleted_at ? $license->deleted_at->format('M d, Y h:i A') : '' }}
                                         </td>
                                         <td class="p-3">
                                             <div class="flex items-center justify-center space-x-3">
@@ -168,14 +169,14 @@
         const bulkRestore = document.getElementById('bulk-restore');
         const bulkDelete = document.getElementById('bulk-delete');
 
-        // Bulk Restore handler
+        // Bulk Restore handler function
         bulkRestore.addEventListener('click', function(e) {
             e.preventDefault();
             const checkedCount = document.querySelectorAll('.license-checkbox:checked').length;
             if(checkedCount === 0) return Swal.fire('Wait', 'Select at least one license first.', 'info');
             Swal.fire({
                 title: 'Restore Selected?',
-                text: `Restore ${checkedCount} licenses to the active list?`,
+                text: `You are about to restore ${checkedCount} licenses to the active list.`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -188,14 +189,14 @@
             });
         });
 
-        // Bulk Delete handler
+        // Bulk Permanent Delete handler function
         bulkDelete.addEventListener('click', function(e) {
             e.preventDefault();
             const checkedCount = document.querySelectorAll('.license-checkbox:checked').length;
             if(checkedCount === 0) return Swal.fire('Wait', 'Select at least one license first.', 'info');
             Swal.fire({
                 title: 'Permanent Deletion?',
-                text: `You are about to PERMANENTLY delete ${checkedCount} licenses. This cannot be undone!`,
+                text: `Warning: You are about to PERMANENTLY delete ${checkedCount} licenses. This action cannot be undone!`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',

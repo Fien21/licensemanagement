@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\License;
 use App\Models\HistoryLog;
 use Illuminate\Http\Request;
@@ -33,6 +35,7 @@ class LicenseController extends Controller
                     ->orWhere('date', 'like', "%{$search}%")
                     ->orWhere('technician', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('lpb_radius_id', 'like', "%{$search}%")
                     ->orWhere('customer_name', 'like', "%{$search}%")
                     ->orWhere('address', 'like', "%{$search}%")
                     ->orWhere('contact', 'like', "%{$search}%")
@@ -100,6 +103,7 @@ class LicenseController extends Controller
             'date' => 'nullable|date',
             'technician' => 'nullable',
             'email' => 'required',
+            'lpb_radius_id' => 'nullable',
             'customer_name' => 'nullable',
             'address' => 'nullable',
             'contact' => 'nullable',
@@ -128,6 +132,7 @@ class LicenseController extends Controller
             'date' => 'nullable|date',
             'technician' => 'nullable',
             'email' => 'required',
+            'lpb_radius_id' => 'nullable',
             'customer_name' => 'nullable',
             'address' => 'nullable',
             'contact' => 'nullable',
@@ -200,9 +205,10 @@ class LicenseController extends Controller
                     $sheet->setCellValue('E' . $row, $license->date);
                     $sheet->setCellValue('F' . $row, $license->technician);
                     $sheet->setCellValue('G' . $row, $license->email);
-                    $sheet->setCellValue('H' . $row, $license->customer_name);
-                    $sheet->setCellValue('I' . $row, $license->address);
-                    $sheet->setCellValue('J' . $row, $license->contact);
+                    $sheet->setCellValue('H' . $row, $license->lpb_radius_id);
+                    $sheet->setCellValue('I' . $row, $license->customer_name);
+                    $sheet->setCellValue('J' . $row, $license->address);
+                    $sheet->setCellValue('K' . $row, $license->contact);
                     $row++;
                 }
             }
@@ -255,6 +261,24 @@ class LicenseController extends Controller
         $ids = $request->input('ids');
         if($ids) {
             License::whereIn('id', $ids)->forceDelete();
+        }
+        return redirect('/licenses')->with('success', 'Selected licenses have been permanently deleted.');
+    }
+
+    public function bulkRestore(Request $request)
+    {
+        $ids = $request->input('ids');
+        if($ids) {
+            License::onlyTrashed()->whereIn('id', $ids)->restore();
+        }
+        return redirect()->route('licenses.index', ['view' => 'archived'])->with('success', 'Selected licenses have been restored.');
+    }
+
+    public function bulkDeletePermanently(Request $request)
+    {
+        $ids = $request->input('ids');
+        if($ids) {
+            License::onlyTrashed()->whereIn('id', $ids)->forceDelete();
         }
         return redirect()->route('licenses.index', ['view' => 'archived'])->with('success', 'Selected licenses have been permanently deleted.');
     }

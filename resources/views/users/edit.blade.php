@@ -61,10 +61,20 @@
                         @method('PUT')
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Email -->
+                            
+                            <!-- SEPARATED EMAIL AND RADIUS ID -->
+                            <!-- PisoFi Email -->
                             <div>
-                                <label for="email" class="block text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">PisoFi Email / LPB Radius ID:</label>
-                                <input type="email" name="email" id="email" value="{{ $user->email }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all bg-gray-50 hover:bg-white" required>
+                                <label for="email" class="block text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">PisoFi Email:</label>
+                                <input type="email" name="email" id="email" value="{{ $user->email }}" 
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all bg-gray-50 hover:bg-white" required>
+                            </div>
+
+                            <!-- LPB Radius ID -->
+                            <div>
+                                <label for="radius_id" class="block text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">LPB Radius ID:</label>
+                                <input type="text" name="radius_id" id="radius_id" value="{{ $user->radius_id }}" 
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all bg-gray-50 hover:bg-white" required>
                             </div>
 
                             <!-- Customer Name -->
@@ -74,15 +84,20 @@
                             </div>
 
                             <!-- Address -->
-                            <div class="md:col-span-1">
+                            <div>
                                 <label for="address" class="block text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Address:</label>
                                 <input type="text" name="address" id="address" value="{{ $user->address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all bg-gray-50 hover:bg-white" required>
                             </div>
 
-                            <!-- Contact -->
+                            <!-- Contact with 11-digit restriction -->
                             <div>
-                                <label for="contact" class="block text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Contact:</label>
-                                <input type="text" name="contact" id="contact" value="{{ $user->contact }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all bg-gray-50 hover:bg-white" required>
+                                <label for="contact" class="block text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Primary Contact Number (11 Digits):</label>
+                                <input type="text" name="contact" id="contact" value="{{ $user->contact }}" 
+                                    maxlength="11"
+                                    pattern="\d{11}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);"
+                                    title="Please enter exactly 11 numeric digits."
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all bg-gray-50 hover:bg-white" required>
                             </div>
                         </div>
 
@@ -91,7 +106,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                Update User
+                                Update User Record
                             </button>
                         </div>
                     </form>
@@ -100,6 +115,7 @@
         </div>
     </div>
 
+    <!-- JavaScript Logic -->
     <script>
         // 1. Validation before submitting
         document.getElementById('editUserForm').addEventListener('submit', function(e) {
@@ -122,21 +138,46 @@
                     text: 'Please fill up all required fields before updating.',
                     confirmButtonColor: '#4f46e5'
                 });
-            } else {
-                // Show loading and submit
-                Swal.fire({
-                    title: 'Updating...',
-                    text: 'Please wait while we save the user changes.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                form.submit();
+                return;
             }
+
+            // Contact length validation
+            const contactInput = document.getElementById('contact');
+            if (contactInput.value.length !== 11) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Contact',
+                    text: 'The contact number must be exactly 11 digits.',
+                    confirmButtonColor: '#4f46e5'
+                });
+                return;
+            }
+
+            // Confirm submission
+            Swal.fire({
+                title: 'Save Changes?',
+                text: "Are you sure you want to update this user's information?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, Update it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Updating...',
+                        text: 'Please wait while we save the user changes.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    form.submit();
+                }
+            });
         });
 
-        // 2. Success Alert
+        // 2. Success Alert Handling
         @if(session('success'))
             Swal.fire({
                 icon: 'success',
@@ -146,6 +187,15 @@
                 timer: 2000
             }).then(() => {
                 window.location.href = "{{ route('users.index') }}";
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ session('error') }}",
+                confirmButtonColor: '#ef4444'
             });
         @endif
     </script>
