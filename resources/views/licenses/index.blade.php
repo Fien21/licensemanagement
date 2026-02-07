@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -105,7 +103,6 @@
                         ];
                     @endphp
                     
-                    {{-- COMMENT: Fixed link to use url()->current() so it doesn't redirect to Dashboard --}}
                     <a href="{{ url()->current() }}?{{ http_build_query(array_merge(request()->query(), ['sheet_name' => null])) }}" class="px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border {{ !request('sheet_name') ? 'bg-gray-800 text-white' : 'bg-white text-gray-600' }}">
                         ALL <span class="ml-1 opacity-70">({{ $totalLicenses }})</span>
                     </a>
@@ -113,10 +110,8 @@
                     @foreach($sheetTabs as $tab)
                         @php
                             $currentCount = isset($sheetCounts) ? ($sheetCounts[$tab['name']] ?? 0) : 0;
-                            // COMMENT: Keep current search/sort filters while switching sheet names
                             $queryParams = array_merge(request()->query(), ['sheet_name' => $tab['name']]);
                         @endphp
-                        {{-- COMMENT: Fixed link to use url()->current() --}}
                         <a href="{{ url()->current() }}?{{ http_build_query($queryParams) }}" 
                            class="flex items-center px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border shadow-sm transition-transform hover:scale-105 {{ $tab['color'] }} {{ request('sheet_name') == $tab['name'] ? 'ring-2 ring-gray-400' : '' }}">
                             {{ $tab['name'] }}
@@ -131,7 +126,6 @@
 
             <!-- Search and Filters -->
             <div class="bg-white shadow-md rounded-lg m-4 p-6">
-                {{-- COMMENT: Action changed to current URL --}}
                 <form action="{{ url()->current() }}" method="GET">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -164,11 +158,6 @@
             <div class="flex-1 overflow-x-auto p-4">
                 <div class="bg-white rounded-lg shadow-lg p-6">
                     
-                    {{-- 
-                        NEW VISUAL ADDITION: 
-                        This displays the current category name in the top middle of the table area 
-                        to prevent staff confusion.
-                    --}}
                     <div class="flex justify-center mb-6">
                         <div class="inline-flex items-center px-8 py-2 bg-gray-50 border-2 border-dashed border-gray-300 rounded-2xl shadow-inner">
                             <span class="text-xs font-semibold text-gray-400 uppercase tracking-widest mr-2">Currently Viewing:</span>
@@ -185,18 +174,18 @@
                                 <thead class="bg-gray-800 text-white">
                                     <tr>
                                         <th class="p-2 text-left"><input type="checkbox" id="select-all"></th>
-                                        <th class="p-2 text-left">Sheet Name</th>
+                                        <th class="p-2 text-left">Branch Name</th>
                                         <th class="p-2 text-left">Vendo Box No.</th>
-                                        <th class="p-2 text-left">Vendo Machine</th>
                                         <th class="p-2 text-left">License</th>
                                         <th class="p-2 text-left">Device ID</th>
                                         <th class="p-2 text-left">Description</th>
                                         <th class="p-2 text-left">Date</th>
                                         <th class="p-2 text-left">Technician</th>
-                                        <th class="p-2 text-left">PisoFi Email / LPB Radius ID</th>
-                                        <th class="p-2 text-left">Customer Name</th>
-                                        <th class="p-2 text-left">Address</th>
-                                        <th class="p-2 text-left">Contact</th>
+                                        <th class="p-2 text-left">PisoFi Email</th>
+                                        <th class="p-2 text-left">LPB Radius ID</th>
+                                        <th class="p-2 text-left hidden">Customer Name</th>
+                                        <th class="p-2 text-left hidden">Address</th>
+                                        <th class="p-2 text-left hidden">Contact</th>
                                         <th class="p-2 text-left">Actions</th>
                                     </tr>
                                 </thead>
@@ -206,16 +195,16 @@
                                         <td class="p-2"><input type="checkbox" name="ids[]" value="{{ $license->id }}" class="license-checkbox"></td>
                                         <td class="p-2 font-bold text-blue-600 whitespace-nowrap">{{ $license->sheet_name }}</td>
                                         <td class="p-2">{{ $license->vendo_box_no }}</td>
-                                        <td class="p-2">{{ $license->vendo_machine }}</td>
                                         <td class="p-2" style="word-break: break-all;">{{ $license->license }}</td>
                                         <td class="p-2">{{ $license->device_id }}</td>
                                         <td class="p-2" style="word-break: break-all;">{{ $license->description }}</td>
                                         <td class="p-2">{{ $license->date }}</td>
                                         <td class="p-2">{{ $license->technician }}</td>
                                         <td class="p-2">{{ $license->email }}</td>
-                                        <td class="p-2">{{ $license->customer_name }}</td>
-                                        <td class="p-2" style="word-break: break-all;">{{ $license->address }}</td>
-                                        <td class="p-2">{{ $license->contact }}</td>
+                                        <td class="p-2">{{ $license->lpb_radius_id }}</td>
+                                        <td class="p-2 hidden">{{ $license->customer_name }}</td>
+                                        <td class="p-2 hidden" style="word-break: break-all;">{{ $license->address }}</td>
+                                        <td class="p-2 hidden">{{ $license->contact }}</td>
                                         <td class="p-2 flex items-center">
                                             <a href="/licenses/{{ $license->id }}" class="text-blue-500 hover:text-blue-700 mr-2">View</a>
                                             <a href="/licenses/{{ $license->id }}/edit" class="text-green-500 hover:text-green-700 mr-2">Edit</a>
@@ -268,6 +257,7 @@
                             <li>date</li>
                             <li>technician</li>
                             <li>email</li>
+                            <li>lpb_radius_id</li>
                             <li>customer_name</li>
                             <li>address</li>
                             <li>contact</li>
@@ -380,10 +370,16 @@
                         @error('technician') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div class="mb-2">
-                        <label class="block text-gray-700 text-sm font-bold mb-1" for="email">PISOFI Email / LPB Radius ID</label>
+                        <label class="block text-gray-700 text-sm font-bold mb-1" for="email">PISOFI Email</label>
                         <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com"
                             class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('email') border-red-500 @enderror">
                         @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="mb-2">
+                        <label class="block text-gray-700 text-sm font-bold mb-1" for="lpb_radius_id">LPB Radius ID</label>
+                        <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345"
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('lpb_radius_id') border-red-500 @enderror">
+                        @error('lpb_radius_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div class="mb-2">
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="customer_name">Customer Name</label>
@@ -584,7 +580,7 @@
                     bulkForm.action = '/licenses/bulk-delete';
                     bulkForm.submit();
                 }
-           e });
+            });
         });
 
         @if ($errors->any())

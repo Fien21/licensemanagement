@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\License;
+use App\Models\HistoryLog;
 use Illuminate\Http\Request;
 use App\Imports\LicensesImport;
 use App\Exports\LicensesExport;
@@ -26,7 +27,6 @@ class LicenseController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('vendo_box_no', 'like', "%{$search}%")
-                    ->orWhere('vendo_machine', 'like', "%{$search}%")
                     ->orWhere('license', 'like', "%{$search}%")
                     ->orWhere('device_id', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
@@ -55,6 +55,8 @@ class LicenseController extends Controller
             } elseif ($sortBy === 'modified_oldest') {
                 $query->orderBy('updated_at', 'asc');
             }
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
         
         $totalLicenses = License::count();
@@ -77,7 +79,8 @@ class LicenseController extends Controller
 
     public function show(License $license)
     {
-        return view('licenses.show', compact('license'));
+        $historyLogs = HistoryLog::where('email', $license->email)->get();
+        return view('licenses.show', compact('license', 'historyLogs'));
     }
 
     public function edit(License $license)
@@ -91,7 +94,6 @@ class LicenseController extends Controller
         $request->validate([
             'sheet_name' => 'required',
             'vendo_box_no' => 'nullable',
-            'vendo_machine' => 'nullable',
             'license' => 'nullable',
             'device_id' => 'nullable',
             'description' => 'nullable',
@@ -120,7 +122,6 @@ class LicenseController extends Controller
         $request->validate([
             'sheet_name' => 'required',
             'vendo_box_no' => 'nullable',
-            'vendo_machine' => 'nullable',
             'license' => 'nullable',
             'device_id' => 'nullable',
             'description' => 'nullable',
@@ -178,27 +179,33 @@ class LicenseController extends Controller
         
         // Load the template
         $spreadsheet = IOFactory::load($templatePath);
-        $sheet = $spreadsheet->getActiveSheet();
         
-        // Get the data to export
-        $licenses = (new LicensesExport($request))->collection();
+        // Get the data to export and group by sheet_name
+        $licensesBySheet = (new LicensesExport($request))->collection()->groupBy('sheet_name');
         
-        // Start writing data from row 4
-        $row = 4;
-        foreach ($licenses as $license) {
-            $sheet->setCellValue('A' . $row, $license->sheet_name);
-            $sheet->setCellValue('B' . $row, $license->vendo_box_no);
-            $sheet->setCellValue('C' . $row, $license->vendo_machine);
-            $sheet->setCellValue('D' . $row, $license->license);
-            $sheet->setCellValue('E' . $row, $license->device_id);
-            $sheet->setCellValue('F' . $row, $license->description);
-            $sheet->setCellValue('G' . $row, $license->date);
-            $sheet->setCellValue('H' . $row, $license->technician);
-            $sheet->setCellValue('I' . $row, $license->email);
-            $sheet->setCellValue('J' . $row, $license->customer_name);
-            $sheet->setCellValue('K' . $row, $license->address);
-            $sheet->setCellValue('L' . $row, $license->contact);
-            $row++;
+        // Iterate over each sheet in the spreadsheet
+        foreach ($spreadsheet->getSheetNames() as $sheetName) {
+            // Check if there is data for this sheet
+            if (isset($licensesBySheet[$sheetName])) {
+                $sheet = $spreadsheet->getSheetByName($sheetName);
+                $licenses = $licensesBySheet[$sheetName];
+                
+                // Start writing data from row 4
+                $row = 4;
+                foreach ($licenses as $license) {
+                    $sheet->setCellValue('A' . $row, $license->vendo_box_no);
+                    $sheet->setCellValue('B' . $row, $license->license);
+                    $sheet->setCellValue('C' . $row, $license->device_id);
+                    $sheet->setCellValue('D' . $row, $license->description);
+                    $sheet->setCellValue('E' . $row, $license->date);
+                    $sheet->setCellValue('F' . $row, $license->technician);
+                    $sheet->setCellValue('G' . $row, $license->email);
+                    $sheet->setCellValue('H' . $row, $license->customer_name);
+                    $sheet->setCellValue('I' . $row, $license->address);
+                    $sheet->setCellValue('J' . $row, $license->contact);
+                    $row++;
+                }
+            }
         }
         
         $fileName = 'licenses_export_' . date('Y-m-d') . '.xlsx';

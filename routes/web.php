@@ -27,6 +27,14 @@ Route::post('/licenses/archived/{id}/delete', [LicenseController::class, 'delete
 Route::get('/schema', [SchemaController::class, 'index']);
 
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+Route::post('/users/{id}/archive', [UserController::class, 'archive'])->name('users.archive');
 Route::get('/users/archived', [UserController::class, 'archived'])->name('users.archived');
-Route::post('/users/archived/{id}/restore', [UserController::class, 'restore']);
-Route::post('/users/archived/{id}/delete', [UserController::class, 'delete']);
+Route::post('/users/archived/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+Route::post('/users/archived/{id}/delete', [UserController::class, 'delete'])->name('users.delete');
+Route::post('/users/bulk-archive', [UserController::class, 'bulkArchive'])->name('users.bulkArchive');
+Route::post('/users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulkDelete');
+Route::post('/users/bulk-restore', [UserController::class, 'bulkRestore'])->name('users.bulkRestore');

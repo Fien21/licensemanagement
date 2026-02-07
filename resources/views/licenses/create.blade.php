@@ -21,6 +21,7 @@
         <form action="/licenses" method="POST">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Sheet Name -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="sheet_name">Sheet Name</label>
                     <select name="sheet_name" id="sheet_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('sheet_name') border-red-500 @enderror">
@@ -33,49 +34,71 @@
                         <p class="text-red-500 text-xs italic">{{ $message }}</p>
                     @enderror
                 </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="vendo_machine">Vendo Machine</label>
-                    <input type="text" name="vendo_machine" id="vendo_machine" value="{{ old('vendo_machine') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('vendo_machine') border-red-500 @enderror">
-                    @error('vendo_machine')
-                        <p class="text-red-500 text-xs italic">{{ $message }}</p>
-                    @enderror
-                </div>
+
+                <!-- Vendo Box No -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="vendo_box_no">Vendo Box No.</label>
                     <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
+
+                <!-- License -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="license">License</label>
                     <input type="text" name="license" id="license" value="{{ old('license') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
+
+                <!-- Device ID -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="device_id">Device ID</label>
                     <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
-                    <input type="text" name="description" id="description" value="{{ old('description') }}" class.blade.php" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
+
+                <!-- Date -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="date">Date</label>
                     <input type="date" name="date" id="date" value="{{ old('date') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="description">Description</label>
+                    <input type="text" name="description" id="description" value="{{ old('description') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+
+                <!-- Technician -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="technician">Technician</label>
                     <input type="text" name="technician" id="technician" value="{{ old('technician') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
+
+                <!-- PISOFI Email -->
                 <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
-                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">PISOFI Email</label>
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder="e.g., customer@example.com" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @error('email') border-red-500 @enderror">
+                    @error('email')
+                        <p class="text-red-500 text-xs italic">{{ $message }}</p>
+                    @enderror
                 </div>
+
+                <!-- LPB Radius ID -->
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="lpb_radius_id">LPB Radius ID</label>
+                    <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+
+                <!-- Customer Name -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="customer_name">Customer Name</label>
                     <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
+
+                <!-- Address -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Address</label>
                     <input type="text" name="address" id="address" value="{{ old('address') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
+
+                <!-- Contact -->
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="contact">Contact</label>
                     <input type="text" name="contact" id="contact" value="{{ old('contact') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">

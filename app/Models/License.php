@@ -13,7 +13,6 @@ class License extends Model
 
     protected $fillable = [
         'vendo_box_no',
-        'vendo_machine',
         'license',
         'device_id',
         'description',

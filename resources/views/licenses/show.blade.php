@@ -80,16 +80,16 @@
                                 <p class="text-gray-900 font-medium text-lg">{{ $license->customer_name }}</p>
                             </div>
 
-                            <!-- Email -->
+                            <!-- Device ID (Swapped here) -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Email Address</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->email }}</p>
+                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Device ID</p>
+                                <p class="text-gray-900 font-mono text-sm bg-blue-50 text-blue-800 px-2 py-1 rounded inline-block">{{ $license->device_id }}</p>
                             </div>
 
-                            <!-- Address -->
+                            <!-- Vendo Box No (Swapped here) -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Address</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->address }}</p>
+                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Vendo Box No.</p>
+                                <p class="text-gray-900 font-medium text-lg">{{ $license->vendo_box_no }}</p>
                             </div>
 
                             <!-- Contact -->
@@ -110,29 +110,187 @@
                                 <p class="text-gray-900 font-medium text-lg">{{ $license->technician }}</p>
                             </div>
 
-                            <!-- Device ID -->
+                            <!-- Email (Swapped here) -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Device ID</p>
-                                <p class="text-gray-900 font-mono text-sm bg-blue-50 text-blue-800 px-2 py-1 rounded inline-block">{{ $license->device_id }}</p>
+                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Email Address</p>
+                                <p class="text-gray-900 font-medium text-lg">{{ $license->email }}</p>
                             </div>
 
-                            <!-- Vendo Box No -->
+                            <!-- Address (Swapped here) -->
                             <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all">
-                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Vendo Box No.</p>
-                                <p class="text-gray-900 font-medium text-lg">{{ $license->vendo_box_no }}</p>
+                                <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Address</p>
+                                <p class="text-gray-900 font-medium text-lg">{{ $license->address }}</p>
                             </div>
 
                             <!-- Description -->
-                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all lg:col-span-2">
+                            <div class="group p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50 transition-all lg:col-span-1">
                                 <p class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Description</p>
                                 <p class="text-gray-700 leading-relaxed">{{ $license->description }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- History Log Section -->
+                <div class="mt-8 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div class="bg-gray-50 border-b border-gray-100 px-8 py-4">
+                        <h3 class="text-lg font-semibold text-gray-700">History Log</h3>
+                    </div>
+
+                    <div class="p-8">
+                        <!-- Search and Sort Controls -->
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="relative">
+                                <input type="text" id="history-search" class="w-full pl-10 pr-4 py-2 border rounded-lg" placeholder="Search history...">
+                                <div class="absolute top-0 left-0 inline-flex items-center justify-center w-10 h-full text-gray-400">
+                                    <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-4">
+                                <select id="sort-year" class="border rounded-lg px-4 py-2">
+                                    <option value="">All Years</option>
+                                </select>
+                                <select id="sort-month" class="border rounded-lg px-4 py-2">
+                                    <option value="">All Months</option>
+                                </select>
+                                <select id="sort-day" class="border rounded-lg px-4 py-2">
+                                    <option value="">All Days</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- History Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-log-body" class="bg-white divide-y divide-gray-200">
+                                    @if($historyLogs->count() > 0)
+                                        @foreach($historyLogs as $log)
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->date }}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->action }}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->user }}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">{{ $log->details }}</td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4">No history found.</td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const historyLogBody = document.getElementById('history-log-body');
+    const searchInput = document.getElementById('history-search');
+    const yearSort = document.getElementById('sort-year');
+    const monthSort = document.getElementById('sort-month');
+    const daySort = document.getElementById('sort-day');
+
+    const historyData = @json($historyLogs);
+
+    function populateHistoryTable(data) {
+        historyLogBody.innerHTML = '';
+        if (data.length === 0) {
+            historyLogBody.innerHTML = '<tr><td colspan="4" class="text-center py-4">No history found.</td></tr>';
+            return;
+        }
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">${item.date}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${item.action}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${item.user}</td>
+                <td class="px-6 py-4 whitespace-nowrap">${item.details}</td>
+            `;
+            historyLogBody.appendChild(row);
+        });
+    }
+
+    function populateSortOptions() {
+        const years = [...new Set(historyData.map(item => new Date(item.date).getFullYear()))];
+        years.sort().reverse().forEach(year => {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSort.appendChild(option);
+        });
+
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        months.forEach((month, index) => {
+            const option = document.createElement('option');
+            option.value = index + 1;
+            option.textContent = month;
+            monthSort.appendChild(option);
+        });
+
+        for (let i = 1; i <= 31; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            daySort.appendChild(option);
+        }
+    }
+
+    function filterAndSortHistory() {
+        let filteredData = [...historyData];
+
+        const searchTerm = searchInput.value.toLowerCase();
+        if (searchTerm) {
+            filteredData = filteredData.filter(item =>
+                Object.values(item).some(val =>
+                    val.toString().toLowerCase().includes(searchTerm)
+                )
+            );
+        }
+
+        const year = yearSort.value;
+        if (year) {
+            filteredData = filteredData.filter(item => new Date(item.date).getFullYear() == year);
+        }
+
+        const month = monthSort.value;
+        if (month) {
+            filteredData = filteredData.filter(item => new Date(item.date).getMonth() + 1 == month);
+        }
+
+        const day = daySort.value;
+        if (day) {
+            filteredData = filteredData.filter(item => new Date(item.date).getDate() == day);
+        }
+
+        populateHistoryTable(filteredData);
+    }
+
+    // Initial population
+    populateHistoryTable(historyData);
+    populateSortOptions();
+
+    // Event Listeners
+    searchInput.addEventListener('input', filterAndSortHistory);
+    yearSort.addEventListener('change', filterAndSortHistory);
+    monthSort.addEventListener('change', filterAndSortHistory);
+    daySort.addEventListener('change', filterAndSortHistory);
+});
+</script>
+
 </body>
 
 </html>
