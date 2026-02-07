@@ -1,38 +1,24 @@
-# Stage 1: Use Composer image to install dependencies
-FROM composer:2 AS composer
+FROM php:8.2-fpm
 
-WORKDIR /app
-
-# Copy only composer files to leverage Docker cache
-COPY composer.json composer.lock ./
-
-# Install dependencies (production only)
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Stage 2: PHP + Apache
-FROM php:8.2-apache
-
-# Enable Apache rewrite
-RUN a2enmod rewrite
-
-# Install PHP extensions required by Laravel
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    unzip \
-    git \
-    && docker-php-ext-install pdo pdo_mysql zip
+    git curl unzip libpq-dev libonig-dev libzip-dev zip \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip
 
-# Set Apache document root to Laravel public folder
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy application files
-COPY . /var/www/html
+WORKDIR /var/www
 
-# Copy vendor folder from composer stage
-COPY --from=composer /app/vendor /var/www/html/vendor
+# Copy app files
+COPY . .
 
-# Make sure storage and cache directories exist and have proper permissions
-RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Laravel setup
+RUN php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear
+
+CMD ["php-fpm"]
