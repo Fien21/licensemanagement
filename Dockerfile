@@ -23,27 +23,26 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www
 
-# Copy composer files first (cache-friendly)
+# Copy composer files
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
+# Install PHP dependencies WITHOUT running artisan
 RUN php -d memory_limit=-1 /usr/bin/composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction \
-    --prefer-dist
+    --prefer-dist \
+    --no-scripts
 
-# Copy application files
+# Copy full application (artisan now exists)
 COPY . .
 
-# Set Laravel permissions
+# Set permissions
 RUN chown -R www-data:www-data \
     /var/www/storage \
     /var/www/bootstrap/cache
 
 EXPOSE 9000
-
 CMD ["php-fpm"]
