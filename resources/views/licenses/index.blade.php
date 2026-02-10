@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Laravel - License Manager</title>
+    <title>{{ config('app.name', 'License Management') }}</title>
 
     <!-- CSRF Token for AJAX Search -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -16,43 +16,102 @@
     <!-- Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
     <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            background-color: #0b1e3b; /* Dark blue background */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Particles container */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            top: 0;
+            left: 0;
+        }
+
+        /* Dashboard content above particles */
+        #main-container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* Top bar color */
+        .top-bar {
+            background-color: #082146; /* Login page top bar color */
+        }
+
+        .astik-logo {
+            height: 40px;
+        }
+
         /* Custom scrollbar for the sheet name tabs */
-        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f3f4f6; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 10px; }
+
+        /* Table row hover */
+        tbody tr:hover { background-color: #f1f5f9; }
+
+        /* Smooth modal transition */
+        .modal-transition { transition: all 0.3s ease-in-out; }
+
+        /* Card styling to match dashboard */
+        .content-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+        }
     </style>
 </head>
 
-<body class="antialiased bg-gray-100">
-    <div class="flex h-screen bg-gray-200">
-        <!-- Reusable Sidebar Component -->
+<body class="antialiased">
+    <!-- Particles background -->
+    <div id="particles-js"></div>
+
+    <!-- Main container with z-index above particles -->
+    <div id="main-container" class="flex h-screen">
+        <!-- Sidebar -->
         @include('sidebar')
 
         <!-- Main content -->
         <div class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- Top Bar -->
+            <div class="top-bar flex items-center px-6 py-3 shadow-lg">
+                <img src="{{ asset('images/astik.jpg') }}" alt="Logo" class="astik-logo mr-3">
+                <span class="font-bold text-lg text-white">AZTECH Compute Enterprises Inc.</span>
+            </div>
 
+            <!-- Session Messages -->
             @if (session('success'))
-                <div class="m-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <div class="m-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg shadow-md" role="alert">
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="m-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <div class="m-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-md" role="alert">
                     <span class="block sm:inline">{{ session('error') }}</span>
                 </div>
             @endif
-            
+
             <!-- Navbar -->
-            <div class="bg-white shadow-md rounded-lg m-4 p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center">
+            <div class="content-card shadow-lg m-4 p-6">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-4 md:space-y-0">
+                    <div class="flex items-center space-x-6">
                         <h2 class="text-3xl font-bold text-gray-800">Manage Licenses</h2>
-                        <!-- High Visibility Total Indicator -->
-                        <div class="ml-6 flex items-center bg-blue-50 border border-blue-200 px-4 py-2 rounded-xl shadow-sm">
-                            <div class="bg-blue-500 p-1.5 rounded-lg mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                        <!-- Total Active Licenses -->
+                        <div class="flex items-center bg-blue-50 border border-blue-200 px-4 py-2 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+                            <div class="bg-blue-500 p-2 rounded-lg mr-3">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
                             </div>
@@ -62,11 +121,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center">
-                        <div class="relative inline-block text-left mr-4">
-                            <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500" id="bulk-actions-menu" aria-haspopup="true" aria-expanded="true">
+
+                    <div class="flex items-center space-x-2">
+                        <!-- Bulk Actions -->
+                        <div class="relative inline-block text-left">
+                            <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="bulk-actions-menu" aria-haspopup="true" aria-expanded="true">
                                 Bulk Actions
-                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </button>
@@ -76,22 +137,30 @@
                                 </div>
                             </div>
                         </div>
-                        <button id="batch-upload-button" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 ease-in-out shadow-lg">Batch Upload</button>
-                        
-                        <!-- NEW EXPORT BUTTON -->
-                        <a href="/licenses/export?{{ http_build_query(request()->query()) }}" class="ml-4 bg-indigo-500 text-white px-6 py-2 rounded-full hover:bg-indigo-600 transition-colors duration-300 ease-in-out shadow-lg flex items-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                        <!-- Batch Upload -->
+                        <button id="batch-upload-button" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-300 ease-in-out shadow-lg flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
-                            Export
+                            <span>Batch Upload</span>
+                        </button>
+
+                        <!-- Export -->
+                        <a href="/licenses/export?{{ http_build_query(request()->query()) }}" class="bg-indigo-500 text-white px-6 py-2 rounded-full hover:bg-indigo-600 transition-colors duration-300 ease-in-out shadow-lg flex items-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            <span>Export</span>
                         </a>
 
-                        <button id="add-license-button" class="ml-4 bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 ease-in-out shadow-lg">+ Add New License</button>
+                        <!-- Add License -->
+                        <button id="add-license-button" class="ml-2 bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-300 ease-in-out shadow-lg">+ Add New License</button>
                     </div>
                 </div>
 
-                <!-- Sheet Name Filter Tabs -->
-                <div class="flex items-center space-x-2 overflow-x-auto pb-2 custom-scrollbar">
+                <!-- Sheet Name Tabs -->
+                <div class="flex items-center space-x-2 overflow-x-auto pb-2 custom-scrollbar mt-4">
                     @php
                         $sheetTabs = [
                             ['name' => 'AZTECH GENSAN', 'color' => 'bg-white text-gray-800 border-green-600 border-b-2'],
@@ -105,7 +174,7 @@
                         ];
                     @endphp
                     
-                    <a href="{{ url()->current() }}?{{ http_build_query(array_merge(request()->query(), ['sheet_name' => null])) }}" class="px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border {{ !request('sheet_name') ? 'bg-gray-800 text-white' : 'bg-white text-gray-600' }}">
+                    <a href="{{ url()->current() }}?{{ http_build_query(array_merge(request()->query(), ['sheet_name' => null])) }}" class="px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border {{ !request('sheet_name') ? 'bg-gray-800 text-white shadow-md' : 'bg-white text-gray-600' }}">
                         ALL <span class="ml-1 opacity-70">({{ $totalLicenses }})</span>
                     </a>
 
@@ -115,7 +184,7 @@
                             $queryParams = array_merge(request()->query(), ['sheet_name' => $tab['name']]);
                         @endphp
                         <a href="{{ url()->current() }}?{{ http_build_query($queryParams) }}" 
-                           class="flex items-center px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border shadow-sm transition-transform hover:scale-105 {{ $tab['color'] }} {{ request('sheet_name') == $tab['name'] ? 'ring-2 ring-gray-400' : '' }}">
+                           class="flex items-center px-4 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap border shadow-sm hover:scale-105 transition-transform {{ $tab['color'] }} {{ request('sheet_name') == $tab['name'] ? 'ring-2 ring-gray-400 shadow-lg' : '' }}">
                             {{ $tab['name'] }}
                             <span class="ml-2 bg-black bg-opacity-10 px-1.5 py-0.5 rounded text-[10px]">
                                 {{ $currentCount }}
@@ -125,9 +194,8 @@
                 </div>
             </div>
 
-
-            <!-- Search and Filters -->
-            <div class="bg-white shadow-md rounded-lg m-4 p-6">
+            <!-- Filters and Search -->
+            <div class="content-card shadow-lg m-4 p-6">
                 <form action="{{ url()->current() }}" method="GET">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -155,11 +223,11 @@
                 </form>
             </div>
 
-
-            <!-- Content -->
+            <!-- License Table Content -->
             <div class="flex-1 overflow-x-auto p-4">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="content-card shadow-lg p-6">
                     
+                    <!-- Current Sheet Indicator -->
                     <div class="flex justify-center mb-6">
                         <div class="inline-flex items-center px-8 py-2 bg-gray-50 border-2 border-dashed border-gray-300 rounded-2xl shadow-inner">
                             <span class="text-xs font-semibold text-gray-400 uppercase tracking-widest mr-2">Currently Viewing:</span>
@@ -169,6 +237,7 @@
                         </div>
                     </div>
 
+                    <!-- Bulk Form Table -->
                     <form id="bulk-form" method="POST">
                         @csrf
                         <div class="overflow-x-auto">
@@ -193,23 +262,23 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($licenses as $license)
-                                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                    <tr class="border-b border-gray-200 hover:bg-gray-100 transition-colors">
                                         <td class="p-2"><input type="checkbox" name="ids[]" value="{{ $license->id }}" class="license-checkbox"></td>
                                         <td class="p-2 font-bold text-blue-600 whitespace-nowrap">{{ $license->sheet_name }}</td>
                                         <td class="p-2">{{ $license->vendo_box_no }}</td>
-                                        <td class="p-2" style="word-break: break-all;">{{ $license->license }}</td>
+                                        <td class="p-2 break-all">{{ $license->license }}</td>
                                         <td class="p-2">{{ $license->device_id }}</td>
-                                        <td class="p-2" style="word-break: break-all;">{{ $license->description }}</td>
+                                        <td class="p-2 break-all">{{ $license->description }}</td>
                                         <td class="p-2">{{ $license->date }}</td>
                                         <td class="p-2">{{ $license->technician }}</td>
                                         <td class="p-2">{{ $license->email }}</td>
                                         <td class="p-2">{{ $license->lpb_radius_id }}</td>
                                         <td class="p-2 hidden">{{ $license->customer_name }}</td>
-                                        <td class="p-2 hidden" style="word-break: break-all;">{{ $license->address }}</td>
+                                        <td class="p-2 hidden break-all">{{ $license->address }}</td>
                                         <td class="p-2 hidden">{{ $license->contact }}</td>
-                                        <td class="p-2 flex items-center">
-                                            <a href="/licenses/{{ $license->id }}" class="text-blue-500 hover:text-blue-700 mr-2">View</a>
-                                            <a href="/licenses/{{ $license->id }}/edit" class="text-green-500 hover:text-green-700 mr-2">Edit</a>
+                                        <td class="p-2 flex items-center space-x-2">
+                                            <a href="/licenses/{{ $license->id }}" class="text-blue-500 hover:text-blue-700">View</a>
+                                            <a href="/licenses/{{ $license->id }}/edit" class="text-green-500 hover:text-green-700">Edit</a>
                                             <button type="button" class="text-red-500 hover:text-red-700" onclick="showArchiveModal({{ $license->id }})">Archive</button>
                                         </td>
                                     </tr>
@@ -219,6 +288,7 @@
                         </div>
                     </form>
 
+                    <!-- Pagination -->
                     <div class="flex items-center justify-between mt-4">
                         <div>
                             <p class="text-sm text-gray-700">
@@ -235,8 +305,8 @@
     </div>
 
     <!-- Batch Upload Modal -->
-    <div id="batch-upload-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out opacity-0">
-        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform transition-all duration-300 ease-in-out scale-95">
+    <div id="batch-upload-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 modal-transition opacity-0">
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg p-6 modal-transition scale-95">
             <button id="close-upload-modal-button" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -248,8 +318,8 @@
                 <div class="mb-4">
                     <button id="guide-button" class="text-blue-500 hover:underline">Use this guide</button>
                     <div id="guide-content" class="hidden mt-2 p-4 bg-gray-100 rounded-lg">
-                        <p>Your CSV or Excel file should have the following headers:</p>
-                        <ul class="list-disc list-inside">
+                        <p class="font-semibold mb-2">Your CSV or Excel file should have the following headers:</p>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
                             <li>sheet_name</li>
                             <li>vendo_box_no</li>
                             <li>license</li>
@@ -263,8 +333,10 @@
                             <li>address</li>
                             <li>contact</li>
                         </ul>
-                        <a href="/sample_imports/license_sample_imports.xlsx" class="text-blue-500 hover:underline mt-2 inline-block">Download sample Excel</a>
-                        <a href="/sample_imports/license_sample_imports.csv" class="text-blue-500 hover:underline mt-2 inline-block ml-4">Download sample CSV</a>
+                        <div class="mt-3 flex gap-3">
+                            <a href="/sample_imports/license_sample_imports.xlsx" class="text-blue-500 hover:underline">Download sample Excel</a>
+                            <a href="/sample_imports/license_sample_imports.csv" class="text-blue-500 hover:underline">Download sample CSV</a>
+                        </div>
                     </div>
                 </div>
 
@@ -274,21 +346,21 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="upload-file">
                             Select File
                         </label>
-                        <input type="file" name="file" id="upload-file" class="w-full px-3 py-2 border rounded-lg">
+                        <input type="file" name="file" id="upload-file" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div id="preview-container" class="mb-4 hidden">
                         <h4 class="font-bold">File Preview:</h4>
-                        <div id="file-preview" class="mt-2 p-2 border rounded-lg bg-gray-50 max-h-48 overflow-auto"></div>
+                        <div id="file-preview" class="mt-2 p-2 border rounded-lg bg-gray-50 max-h-48 overflow-auto text-xs"></div>
                     </div>
 
                     <div id="progress-container" class="w-full bg-gray-200 rounded-full h-2.5 mb-4 hidden">
-                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                     </div>
 
-                    <div class="flex justify-end">
-                        <button type="button" id="cancel-upload-button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Upload</button>
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="cancel-upload-button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Upload</button>
                     </div>
                 </form>
             </div>
@@ -303,9 +375,9 @@
     </div>
 
     <!-- Add License Modal -->
-    <div id="add-license-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out opacity-0">
-        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 transform transition-all duration-300 ease-in-out scale-95">
-            <button id="close-modal-button" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+    <div id="add-license-modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 modal-transition opacity-0">
+        <div class="relative bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 modal-transition scale-95 max-h-[90vh] overflow-y-auto">
+            <button id="close-modal-button" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 z-10">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -332,28 +404,28 @@
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="vendo_box_no">Vendo Box No</label>
                         <input type="text" name="vendo_box_no" id="vendo_box_no" value="{{ old('vendo_box_no') }}" placeholder="e.g., V123" readonly
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('vendo_box_no') border-red-500 @enderror">
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none text-sm @error('vendo_box_no') border-red-500 @enderror">
                         @error('vendo_box_no') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="license">License</label>
                         <input type="text" name="license" id="license" value="{{ old('license') }}" placeholder="Enter the license key"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('license') border-red-500 @enderror">
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('license') border-red-500 @enderror">
                         @error('license') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="device_id">Device ID</label>
                         <input type="text" name="device_id" id="device_id" value="{{ old('device_id') }}" placeholder="Enter the device ID"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('device_id') border-red-500 @enderror">
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('device_id') border-red-500 @enderror">
                         @error('device_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="date">Date</label>
                         <input type="date" name="date" id="date" value="{{ old('date') }}"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('date') border-red-500 @enderror">
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('date') border-red-500 @enderror">
                         @error('date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -363,21 +435,21 @@
                             oninput="this.value = this.value.replace(/[0-9]/g, '')"
                             pattern="^[a-zA-Z\s]*$"
                             title="Technician name should only contain letters and spaces"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('technician') border-red-500 @enderror">
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('technician') border-red-500 @enderror">
                         @error('technician') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-gray-700 text-sm font-bold mb-1" for="description">Description</label>
                         <textarea name="description" id="description" placeholder="Add any relevant notes..." rows="2"
-                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
+                            class="w-full px-3 py-2 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                         @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
                 <!-- Section 2: Customer Information Container -->
                 <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
-                    <h4 class="text-md font-bold text-gray-600 mb-3 border-b pb-1">Customer Information</h4>
+                    <h4 class="text-md font-bold text-gray-600 mb-3 border-b pb-2">Customer Information</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                         
                         <div>
@@ -387,47 +459,47 @@
                                 title="Strictly use a valid @gmail.com address"
                                 oninvalid="this.setCustomValidity('Please provide a valid Gmail address ending in @gmail.com')"
                                 oninput="this.setCustomValidity('')"
-                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('email') border-red-500 @enderror" required>
+                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('email') border-red-500 @enderror" required>
                             @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-1" for="lpb_radius_id">LPB Radius ID</label>
                             <input type="text" name="lpb_radius_id" id="lpb_radius_id" value="{{ old('lpb_radius_id') }}" placeholder="e.g., LPB-12345"
-                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm @error('lpb_radius_id') border-red-500 @enderror">
+                                class="w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm @error('lpb_radius_id') border-red-500 @enderror">
                             @error('lpb_radius_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-1" for="customer_name">Customer Name</label>
                             <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name') }}" placeholder="e.g., Jane Smith" readonly
-                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('customer_name') border-red-500 @enderror">
+                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none text-sm @error('customer_name') border-red-500 @enderror">
                             @error('customer_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-1" for="contact">Contact</label>
                             <input type="text" name="contact" id="contact" value="{{ old('contact') }}" placeholder="e.g., 555-1234" readonly
-                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('contact') border-red-500 @enderror">
+                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none text-sm @error('contact') border-red-500 @enderror">
                             @error('contact') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="md:col-span-2">
                             <label class="block text-gray-700 text-sm font-bold mb-1" for="address">Address</label>
                             <input type="text" name="address" id="address" value="{{ old('address') }}" placeholder="e.g., 123 Main St, Anytown" readonly
-                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none transition-colors duration-300 ease-in-out text-sm @error('address') border-red-500 @enderror">
+                                class="w-full px-3 py-2 border rounded-lg bg-gray-200 cursor-not-allowed focus:outline-none text-sm @error('address') border-red-500 @enderror">
                             @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>
 
-                <div class="flex justify-end mt-4 border-t pt-4">
+                <div class="flex justify-end mt-4 border-t pt-4 space-x-2">
                     <button id="cancel-modal-button" type="button"
-                        class="px-5 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 mr-2 transition-colors duration-300 ease-in-out text-sm">
+                        class="px-5 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors text-sm">
                         Cancel
                     </button>
                     <button type="submit"
-                        class="px-5 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300 ease-in-out text-sm">
+                        class="px-5 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm">
                         Submit
                     </button>
                 </div>
@@ -439,6 +511,7 @@
     <form id="archive-form" method="POST" class="hidden">@csrf</form>
 
     <script>
+        // Modal Elements
         const addLicenseButton = document.getElementById('add-license-button');
         const addLicenseModal = document.getElementById('add-license-modal');
         const closeModalButton = document.getElementById('close-modal-button');
@@ -496,6 +569,7 @@
         emailInput.addEventListener('blur', function() { fetchUserData(this.value); });
         lpbIdInput.addEventListener('blur', function() { fetchUserData(this.value); });
 
+        // Modal Management Functions
         function openModal(modal) {
             modal.classList.remove('hidden');
             if(modal.id === 'add-license-modal') {
@@ -521,6 +595,7 @@
             }, 300);
         }
 
+        // Modal Event Listeners
         addLicenseButton.addEventListener('click', () => openModal(addLicenseModal));
         batchUploadButton.addEventListener('click', () => openModal(batchUploadModal));
         closeModalButton.addEventListener('click', (e) => { e.preventDefault(); closeModal(addLicenseModal); });
@@ -528,8 +603,10 @@
         closeUploadModalButton.addEventListener('click', (e) => { e.preventDefault(); closeModal(batchUploadModal); });
         cancelUploadButton.addEventListener('click', (e) => { e.preventDefault(); closeModal(batchUploadModal); });
 
+        // Guide Toggle
         guideButton.addEventListener('click', () => guideContent.classList.toggle('hidden'));
 
+        // File Upload Preview
         uploadFile.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -542,34 +619,39 @@
             }
         });
 
+        // Batch Upload Form Submission
         batchUploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             progressContainer.classList.remove('hidden');
             const formData = new FormData(e.target);
             const xhr = new XMLHttpRequest();
+            
             xhr.upload.addEventListener('progress', (e) => {
                 if (e.lengthComputable) {
                     const percentComplete = (e.loaded / e.total) * 100;
                     progressBar.style.width = percentComplete + '%';
                 }
             });
+            
             xhr.addEventListener('load', () => {
                 if (xhr.status === 200) {
                     uploadFormContainer.classList.add('hidden');
                     successMessage.classList.remove('hidden');
-                     setTimeout(() => {
+                    setTimeout(() => {
                         closeModal(batchUploadModal);
                         location.reload();
                     }, 2000);
                 } else {
-                     Swal.fire('Error', 'Batch upload failed.', 'error');
-                     progressContainer.classList.add('hidden');
+                    Swal.fire('Error', 'Batch upload failed.', 'error');
+                    progressContainer.classList.add('hidden');
                 }
             });
+            
             xhr.open('POST', '/licenses/import');
             xhr.send(formData);
         });
 
+        // Archive Modal Function
         function showArchiveModal(id) {
             Swal.fire({
                 title: 'Archive License?',
@@ -585,9 +667,10 @@
                     form.action = '/licenses/' + id + '/archive';
                     form.submit();
                 }
-            })
+            });
         }
 
+        // Bulk Actions Dropdown
         const bulkActionsMenu = document.getElementById('bulk-actions-menu');
         const bulkActionsDropdown = document.getElementById('bulk-actions-dropdown');
         bulkActionsMenu.addEventListener('click', () => bulkActionsDropdown.classList.toggle('hidden'));
@@ -595,12 +678,14 @@
             if (!bulkActionsMenu.contains(event.target)) bulkActionsDropdown.classList.add('hidden');
         });
 
+        // Select All Checkboxes
         const selectAll = document.getElementById('select-all');
         const checkboxes = document.querySelectorAll('.license-checkbox');
         selectAll.addEventListener('change', function() {
             checkboxes.forEach(checkbox => checkbox.checked = this.checked);
         });
 
+        // Bulk Archive Action
         const bulkForm = document.getElementById('bulk-form');
         const bulkArchive = document.getElementById('bulk-archive');
 
@@ -608,6 +693,7 @@
             e.preventDefault();
             const checkedCount = document.querySelectorAll('.license-checkbox:checked').length;
             if(checkedCount === 0) return Swal.fire('Wait', 'Select at least one license first.', 'info');
+            
             Swal.fire({
                 title: 'Archive Selected',
                 text: `Archive ${checkedCount} items?`,
@@ -622,9 +708,31 @@
             });
         });
 
+        // Auto-open modal if there are validation errors
         @if ($errors->any())
             window.onload = () => openModal(addLicenseModal);
         @endif
+    </script>
+
+    <!-- Particles.js Initialization -->
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#ffffff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, opacity: 0.1 },
+                move: { enable: true, speed: 1, direction: 'none', out_mode: 'bounce' }
+            },
+            interactivity: { 
+                events: { 
+                    onhover: { enable: true, mode: 'repulse' } 
+                } 
+            },
+            retina_detect: true
+        });
     </script>
 </body>
 </html>
